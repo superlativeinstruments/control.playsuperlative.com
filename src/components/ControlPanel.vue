@@ -35,7 +35,7 @@ let deviceName = ref('');
 
 /**
  * Concatenate two typed arrays of same type.
- * 
+ *
  * @param {TypedArray} a
  * @param {TypedArray} b
  * @returns {TypedArray}
@@ -50,7 +50,7 @@ function concatTypedArrays(a, b) {
 
 /**
  * Wait for a given amount of time.
- * 
+ *
  * @param {number} ms
  * @returns {Promise}
  */
@@ -217,7 +217,7 @@ async function requestDevice() {
 				return {vendorId,  productId: element};
 			})
 		});
-		
+
 		deviceName.value = device.productName;
 		serialPort = new SerialPort(device);
 		await serialPortConnect();
@@ -321,22 +321,22 @@ if (devices.length > 0) {
 		</div>
 	</div>
 
-	<div v-if="!webusbSupported" class="grid grid-cols-1 justify-items-center gap-12 w-1/2 max-w-xl">
-		<h1 class="text-center text-2xl">This browser is not supported.<br/><small>Try one of these:</small></h1>
+	<div v-if="!webusbSupported" class="grid grid-cols-1 justify-items-center gap-12 w-10/12 max-w-xl">
+		<h1 class="text-center text-2xl">This browser is not supported.<br/><small class="block mt-8">Try one of these:</small></h1>
 		<ul class="grid grid-flow-col auto-cols-fr gap-8 w-full">
-			<li class="text-center text-xl">
+			<li class="text-center text-lg text-neutral">
 				<a href="https://www.opera.com/download" target="_blank">
 					<img class="mb-4" :src="operaLogo" alt="">
 					Opera
 				</a>
 			</li>
-			<li class="text-center text-xl">
+			<li class="text-center text-lg text-neutral">
 				<a href="https://www.google.com/chrome/" target="_blank">
 					<img class="mb-4" :src="chromeLogo" alt="">
 					Chrome
 				</a>
 			</li>
-			<li class="text-center text-xl">
+			<li class="text-center text-lg text-neutral">
 				<a href="https://www.microsoft.com/edge" target="_blank">
 					<img class="mb-4" :src="edgeLogo" alt="">
 					Edge
