@@ -14,8 +14,12 @@ Requirements:
 ### 2. Initialize certificate authority (CA):
 
 ```bash
-& step ca init
+step ca init
+```
 
+You can change name, privisioner and password. Leave the other options as suggested here:
+
+```bash
 ✔ What would you like to name your new PKI? (e.g. Smallstep): Example Inc.
 ✔ What DNS names or IP addresses would you like to add to your new CA? (e.g. ca.smallstep.com[,1.1.1.1,etc.]): localhost
 ✔ What address will your new CA listen at? (e.g. :443): 127.0.0.1:8443
@@ -59,3 +63,9 @@ sudo pnpm run dev
 ***NOTE:** `sudo` is required on macOS because of SSL certificates.*
 
 Server should now be reachable at `https://control.playsuperlative.com:[port]`
+
+## Deployment
+
+Continuous delivery is set up through [Vercel](https://vercel.com/).  
+Every push to the `main` branch gets deployed to [control.playsuperlative.com](https://control.playsuperlative.com/).  
+A CNAME DNS entry in the [A2 Hosting control panel](https://my.a2hosting.com/index.php?rp=/login) routes the domain to Vercel.
