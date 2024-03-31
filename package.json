@@ -6,7 +6,9 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"generate_certs": "step ca certificate control.playsuperlative.com certs/srv.crt certs/srv.key"
+
 	},
 	"author": "Rune Warhuus <rune@dinkdonk.no>",
 	"license": "UNLICENSED",

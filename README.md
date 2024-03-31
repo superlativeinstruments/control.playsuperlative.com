@@ -42,7 +42,7 @@ step certificate install $(step path)/certs/root_ca.crt
 ### 5. Create certificate
 
 ```bash
-step ca certificate control.playsuperlative.com .certs/srv.crt .certs/srv.key
+pnpm run generate_certs
 ```
 
 ***NOTE:** The certificate is only valid for 24 hours, and must be regenerated to keep Chrome happy.*
