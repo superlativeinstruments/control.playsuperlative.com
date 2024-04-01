@@ -13,10 +13,10 @@ let webusbSupported = ref(true);
 let loading = ref(true);
 let saving = ref(false);
 let settings = ref({
-	internalMidiChannelIn: 1,
-	internalMidiChannelOut: 1,
-	externalMidiChannelIn: 1,
-	externalMidiChannelOut: 1,
+	internalMidiChannelIn: 0,
+	internalMidiChannelOut: 0,
+	externalMidiChannelIn: 0,
+	externalMidiChannelOut: 0,
 	midiSyncTrsIn: false,
 	midiSyncUsbIn: false
 });
@@ -258,7 +258,7 @@ if (devices.length > 0) {
 						<label class="cursor-pointer label">
 							<span class="label-text text-xl">Internal MIDI channel in</span>
 							<select class="select select-accent" v-model="settings.internalMidiChannelIn">
-								<option v-for="i in 16">{{ i }}</option>
+								<option v-for="(n, index) in 16" :value="index">{{ n }}</option>
 							</select>
 						</label>
 					</div>
@@ -266,7 +266,7 @@ if (devices.length > 0) {
 						<label class="cursor-pointer label">
 							<span class="label-text text-xl">Internal MIDI channel out</span>
 							<select class="select select-accent" v-model="settings.internalMidiChannelOut">
-								<option v-for="i in 16">{{ i }}</option>
+								<option v-for="(n, index) in 16" :value="index">{{ n }}</option>
 							</select>
 						</label>
 					</div>
@@ -274,7 +274,7 @@ if (devices.length > 0) {
 						<label class="cursor-pointer label">
 							<span class="label-text text-xl">External MIDI channel in</span>
 							<select class="select select-accent" v-model="settings.externalMidiChannelIn">
-								<option v-for="i in 16" :value="i">{{ i }}</option>
+								<option v-for="(n, index) in 16" :value="index">{{ n }}</option>
 							</select>
 						</label>
 					</div>
@@ -282,7 +282,7 @@ if (devices.length > 0) {
 						<label class="cursor-pointer label">
 							<span class="label-text text-xl">External MIDI channel out</span>
 							<select class="select select-accent" v-model="settings.externalMidiChannelOut">
-								<option v-for="i in 16" :value="i">{{ i }}</option>
+								<option v-for="(n, index) in 16" :value="index">{{ n }}</option>
 							</select>
 						</label>
 					</div>
