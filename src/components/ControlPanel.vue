@@ -358,6 +358,7 @@ function onMatrixRadioClick(event, value) {
 							<input type="checkbox"
 								   class="toggle toggle-lg toggle-accent"
 								   v-model="settings.midiSyncTrsIn"
+								   @change="settings.midiSyncTrsIn ? settings.midiSyncUsbIn = false : ''"
 								   :disabled="settings.midiTrsIn == ''" />
 						</label>
 					</div>
@@ -368,6 +369,7 @@ function onMatrixRadioClick(event, value) {
 							<input type="checkbox"
 								   class="toggle toggle-lg toggle-accent"
 								   v-model="settings.midiSyncUsbIn"
+								   @change="settings.midiSyncUsbIn ? settings.midiSyncTrsIn = false : ''"
 								   :disabled="settings.midiUsbIn == ''" />
 						</label>
 					</div>
@@ -375,39 +377,53 @@ function onMatrixRadioClick(event, value) {
 
 				<div class="grid gap-4 form-control w-full mb-12">
 					<label class="label justify-start gap-2">
-						<span class="label-text text-xl">Clock subdivision</span>
+						<span class="label-text text-xl"
+							  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">Clock subdivision</span>
 						<div class="tooltip" data-tip="MIDI clock is 24ppm. This means that 24 clock ticks represent a single quarter note. You can divide this with the slider below so that the SB01 LFO is triggered faster or slower than the standard quarter note">
 							<button class="text-neutral"><v-icon name="md-help" scale="1.25" /></button>
 						</div>
 					</label>
-					<input type="range" min="0" max="6" class="range range-accent" step="1" v-model="settings.clockSubdivision" />
+					<input type="range"
+						   min="0"
+						   max="6"
+						   class="range range-accent"
+						   step="1"
+						   :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn"
+						   v-model="settings.clockSubdivision" />
 					<div class="w-full flex justify-between text-xs px-2">
-						<span class="relative font-music text-3xl text-neutral"
-							  :class="{'!text-accent': settings.clockSubdivision == 0}">
+						<span class="relative font-music text-3xl"
+							  :class="{'active': settings.clockSubdivision == 0}"
+							  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">
 							𝅗𝅥
 						</span> <!-- 48 -->
-						<span class="relative font-music text-3xl text-neutral"
-							  :class="{'!text-accent': settings.clockSubdivision == 1}">
+						<span class="relative font-music text-3xl"
+							  :class="{'active': settings.clockSubdivision == 1}"
+							  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">
 							𝅘𝅥
 						</span> <!-- 24 -->
-						<span class="relative font-music text-3xl text-neutral"
-							  :class="{'!text-accent': settings.clockSubdivision == 2}">
+						<span class="relative font-music text-3xl"
+							  :class="{'active': settings.clockSubdivision == 2}"
+							  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">
 							𝅘𝅥<span class="font-sans absolute -top-4">³</span>
 						</span> <!-- 16 -->
-						<span class="relative font-music text-3xl text-neutral"
-							  :class="{'!text-accent': settings.clockSubdivision == 3}">
+						<span class="relative font-music text-3xl"
+							  :class="{'active': settings.clockSubdivision == 3}"
+							  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">
 							𝅘𝅥𝅯
 						</span> <!-- 12 -->
-						<span class="relative font-music text-3xl text-neutral"
-							  :class="{'!text-accent': settings.clockSubdivision == 4}">
+						<span class="relative font-music text-3xl"
+							  :class="{'active': settings.clockSubdivision == 4}"
+							  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">
 							𝅘𝅥𝅯<span class="font-sans absolute -top-4">³</span>
 						</span> <!-- 8 -->
-						<span class="relative font-music text-3xl text-neutral"
-							  :class="{'!text-accent': settings.clockSubdivision == 5}">
+						<span class="relative font-music text-3xl"
+							  :class="{'active': settings.clockSubdivision == 5}"
+							  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">
 							𝅘𝅥𝅰
 						</span> <!-- 6 -->
-						<span class="relative font-music text-3xl text-neutral"
-							  :class="{'!text-accent': settings.clockSubdivision == 6}">
+						<span class="relative font-music text-3xl"
+							  :class="{'active': settings.clockSubdivision == 6}"
+							  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">
 							𝅘𝅥𝅰<span class="font-sans absolute -top-4">³</span>
 						</span> <!-- 4 -->
 					</div>
@@ -502,5 +518,35 @@ function onMatrixRadioClick(event, value) {
 	white-space: nowrap;
 	transform-origin: bottom left;
 	transform: rotate(-45deg);
+}
+
+.font-music {
+	@apply text-neutral;
+
+	&.active {
+		@apply !text-accent;
+	}
+
+	&.active[disabled="true"] {
+		@apply !text-neutral-content opacity-50;
+	}
+
+	&[disabled="true"] {
+		@apply !text-neutral;
+	}
+}
+
+.range[disabled] {
+	--range-shdw: theme(colors.base-200);
+
+	@apply cursor-not-allowed;
+
+	&::-webkit-slider-runnable-track {
+		@apply bg-base-content/5;
+	}
+
+	&::-moz-range-track {
+		@apply bg-base-content/5;
+	}
 }
 </style>
