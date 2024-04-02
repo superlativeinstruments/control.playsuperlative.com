@@ -484,20 +484,38 @@ function onMatrixRadioClick(event, value) {
 }
 
 .matrix {
-	width: calc((3rem - 1px) * 4);
-	height: calc((3rem - 1px) * 2);
+	width: calc((3rem - 2px) * 4);
+	height: calc((3rem - 2px) * 2);
 }
 
 .matrix-column {
 	&:nth-child(1) .radio {
-		border-left-width: 1px;
+		border-left-width: 2px;
+		&:nth-child(1) {
+			border-top-left-radius: 0.5rem !important;
+		}
+
+		&:last-child {
+			border-bottom-left-radius: 0.5rem !important;
+		}
+	}
+
+	&:last-child .radio {
+		&:nth-child(1) {
+			border-top-right-radius: 0.5rem !important;
+		}
+
+		&:last-child {
+			border-bottom-right-radius: 0.5rem !important;
+		}
 	}
 }
 
 .radio {
-	@apply rounded-none;
-	width: calc(3rem - 1px);
-	height: calc(3rem - 1px);
+	@apply rounded-none bg-base-100/10;
+	width: calc(3rem - 2px);
+	height: calc(3rem - 2px);
+	border-width: 2px;
 	border-left-width: 0;
 
 	&:not(:nth-child(1)) {
@@ -513,7 +531,7 @@ function onMatrixRadioClick(event, value) {
 .matrix-col-label {
 	position: relative;
 	left: 1.5rem;
-	max-width: calc(3rem - 1px);
+	max-width: calc(3rem - 2px);
 	overflow: visible;
 	white-space: nowrap;
 	transform-origin: bottom left;
