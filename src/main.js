@@ -4,10 +4,12 @@ import './style.css'
 import App from './App.vue'
 
 import {
+	MdHelp,
 	MdUsb,
 } from 'oh-vue-icons/icons'
 
 addIcons(
+	MdHelp,
 	MdUsb,
 )
 

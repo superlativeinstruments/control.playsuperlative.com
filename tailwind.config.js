@@ -30,6 +30,7 @@ module.exports = {
 			fontFamily: {
 				'sans': ['Roboto', ...defaultTheme.fontFamily.sans],
 				'sans-condensed': ['Roboto\ Condensed', ...defaultTheme.fontFamily.sans],
+				'music': ['Noto\ Music'],
 			},
 		},
 	},
