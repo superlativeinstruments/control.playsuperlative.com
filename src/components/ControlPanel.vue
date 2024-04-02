@@ -24,7 +24,7 @@ let settings = ref({
 	midiSyncTrsIn: false,
 	midiSyncUsbIn: false,
 
-	clockSubdivision: 1
+	clockSubdivision: 3
 });
 
 const states = reactive({
