@@ -13,12 +13,16 @@ let webusbSupported = ref(true);
 let loading = ref(true);
 let saving = ref(false);
 let settings = ref({
-	internalMidiChannelIn: 0,
-	internalMidiChannelOut: 0,
-	externalMidiChannelIn: 0,
-	externalMidiChannelOut: 0,
+	midiChannelIn: 0,
+	midiChannelOut: 0,
+
 	midiSyncTrsIn: false,
-	midiSyncUsbIn: false
+	midiSyncUsbIn: false,
+
+	midiTrsIn: 'internal',
+	midiUsbIn: 'internal',
+	midiTrsOut: 'internal',
+	midiUsbOut: 'internal'
 });
 
 const states = reactive({
@@ -73,23 +77,13 @@ function onSerialData(data) {
 	}
 
 	if (message.indexOf('int_midi_chan_in=') !== -1) {
-		console.log('Internal MIDI channel in:', data.getUint8(17));
-		settings.value.internalMidiChannelIn = data.getUint8(17);
+		console.log('MIDI channel in:', data.getUint8(17));
+		settings.value.midiChannelIn = data.getUint8(17);
 	}
 
 	if (message.indexOf('int_midi_chan_out=') !== -1) {
-		console.log('Internal MIDI channel out:', data.getUint8(18));
-		settings.value.internalMidiChannelOut = data.getUint8(18);
-	}
-
-	if (message.indexOf('ext_midi_chan_in=') !== -1) {
-		console.log('External MIDI channel in:', data.getUint8(17));
-		settings.value.externalMidiChannelIn = data.getUint8(17);
-	}
-
-	if (message.indexOf('ext_midi_chan_out=') !== -1) {
-		console.log('External MIDI channel out:', data.getUint8(18));
-		settings.value.externalMidiChannelOut = data.getUint8(18);
+		console.log('MIDI channel out:', data.getUint8(18));
+		settings.value.midiChannelOut = data.getUint8(18);
 	}
 }
 
@@ -185,10 +179,8 @@ function onDisconnect() {
 async function save() {
 	saving.value = true;
 
-	await sendCommand('int_midi_chan_in=', settings.value.internalMidiChannelIn);
-	await sendCommand('int_midi_chan_out=', settings.value.internalMidiChannelOut);
-	await sendCommand('ext_midi_chan_in=', settings.value.externalMidiChannelIn);
-	await sendCommand('ext_midi_chan_out=', settings.value.externalMidiChannelOut);
+	await sendCommand('int_midi_chan_in=', settings.value.midiChannelIn);
+	await sendCommand('int_midi_chan_out=', settings.value.midiChannelOut);
 	await sendCommand('ext_midi_sync_trs_in=', settings.value.midiSyncTrsIn ? 0x01 : 0x00);
 	await sendCommand('ext_midi_sync_usb_in=', settings.value.midiSyncUsbIn ? 0x01 : 0x00);
 
@@ -243,6 +235,12 @@ if (devices.length > 0) {
 	state.value = states.WAITING_FOR_REQUEST;
 	console.log('No device found');
 }
+
+function onMatrixRadioClick(event, value) {
+	if (event.target._value === settings.value[value]) {
+		settings.value[value] = '';
+	}
+}
 </script>
 
 <template>
@@ -253,49 +251,122 @@ if (devices.length > 0) {
 
 		<div v-if="state == states.READY" class="hero bg-base-300 w-screen max-w-xl rounded-xl">
 			<div class="grid gap-12 w-screen max-w-xl p-12">
+				<div class="grid justify-center mt-12">
+					<div class="col-start-2 grid grid-cols-4 pb-2">
+						<label class="label-text text-md matrix-col-label"
+							   :class="{'text-accent': settings.midiTrsIn != ''}">MIDI in TRS</label>
+						<label class="label-text text-md matrix-col-label"
+							   :class="{'text-accent': settings.midiUsbIn != ''}">MIDI in USB</label>
+						<label class="label-text text-md matrix-col-label"
+							   :class="{'text-accent': settings.midiTrsOut != ''}">MIDI out TRS</label>
+						<label class="label-text text-md matrix-col-label"
+							   :class="{'text-accent': settings.midiUsbOut != ''}">MIDI out USB</label>
+					</div>
+					<div class="grid row-start-2 grid-rows-2 items-center justify-end pr-3 w-0">
+						<label class="label-text text-lg text-right">Internal</label>
+						<label class="label-text text-lg text-right">External</label>
+					</div>
+					<div class="grid row-start-2 grid-cols-4 border-primary matrix">
+						<div class="grid matrix-column">
+							<input type="radio"
+								   name="radio-1"
+								   class="radio"
+								   value="internal"
+								   v-model="settings.midiTrsIn"
+								   @click="onMatrixRadioClick($event, 'midiTrsIn')" />
+							<input type="radio"
+								   name="radio-1"
+								   class="radio"
+								   value="external"
+								   v-model="settings.midiTrsIn"
+								   @click="onMatrixRadioClick($event, 'midiTrsIn')" />
+						</div>
+						<div class="grid matrix-column">
+							<input type="radio"
+								   name="radio-2"
+								   class="radio"
+								   value="internal"
+								   v-model="settings.midiUsbIn"
+								   @click="onMatrixRadioClick($event, 'midiUsbIn')" />
+							<input type="radio"
+								   name="radio-2"
+								   class="radio"
+								   value="external"
+								   v-model="settings.midiUsbIn"
+								   @click="onMatrixRadioClick($event, 'midiUsbIn')" />
+						</div>
+						<div class="grid matrix-column">
+							<input type="radio"
+								   name="radio-3"
+								   class="radio"
+								   value="internal"
+								   v-model="settings.midiTrsOut"
+								   @click="onMatrixRadioClick($event, 'midiTrsOut')" />
+							<input type="radio"
+								   name="radio-3"
+								   class="radio"
+								   value="external"
+								   v-model="settings.midiTrsOut"
+								   @click="onMatrixRadioClick($event, 'midiTrsOut')" />
+						</div>
+						<div class="grid matrix-column">
+							<input type="radio"
+								   name="radio-4"
+								   class="radio"
+								   value="internal"
+								   v-model="settings.midiUsbOut"
+								   @click="onMatrixRadioClick($event, 'midiUsbOut')" />
+							<input type="radio"
+								   name="radio-4"
+								   class="radio"
+								   value="external"
+								   v-model="settings.midiUsbOut"
+								   @click="onMatrixRadioClick($event, 'midiUsbOut')" />
+						</div>
+					</div>
+				</div>
+
 				<div class="grid auto-rows-fr gap-4">
 					<div class="form-control w-full">
 						<label class="cursor-pointer label">
-							<span class="label-text text-xl">Internal MIDI channel in</span>
-							<select class="select select-accent" v-model="settings.internalMidiChannelIn">
+							<span class="label-text text-xl"
+								   :disabled="settings.midiTrsIn == '' && settings.midiUsbIn == ''">MIDI channel in</span>
+							<select class="select select-accent"
+									v-model="settings.midiChannelIn"
+									:disabled="settings.midiTrsIn == '' && settings.midiUsbIn == ''">
 								<option v-for="(n, index) in 16" :value="index">{{ n }}</option>
 							</select>
 						</label>
 					</div>
 					<div class="form-control w-full">
 						<label class="cursor-pointer label">
-							<span class="label-text text-xl">Internal MIDI channel out</span>
-							<select class="select select-accent" v-model="settings.internalMidiChannelOut">
+							<span class="label-text text-xl"
+								   :disabled="settings.midiTrsOut == '' && settings.midiUsbOut == ''">MIDI channel out</span>
+							<select class="select select-accent"
+									v-model="settings.midiChannelOut"
+									:disabled="settings.midiTrsOut == '' && settings.midiUsbOut == ''">
 								<option v-for="(n, index) in 16" :value="index">{{ n }}</option>
 							</select>
 						</label>
 					</div>
 					<div class="form-control w-full">
 						<label class="cursor-pointer label">
-							<span class="label-text text-xl">External MIDI channel in</span>
-							<select class="select select-accent" v-model="settings.externalMidiChannelIn">
-								<option v-for="(n, index) in 16" :value="index">{{ n }}</option>
-							</select>
+							<span class="label-text text-xl"
+								  :disabled="settings.midiTrsIn == ''">MIDI sync TRS in</span>
+							<input type="checkbox"
+								   class="toggle toggle-lg toggle-accent"
+								   v-model="settings.midiSyncTrsIn"
+								   :disabled="settings.midiTrsIn == ''" />
 						</label>
 					</div>
 					<div class="form-control w-full">
 						<label class="cursor-pointer label">
-							<span class="label-text text-xl">External MIDI channel out</span>
-							<select class="select select-accent" v-model="settings.externalMidiChannelOut">
-								<option v-for="(n, index) in 16" :value="index">{{ n }}</option>
-							</select>
-						</label>
-					</div>
-					<div class="form-control w-full">
-						<label class="cursor-pointer label">
-							<span class="label-text text-xl">MIDI sync TRS in</span>
-							<input type="checkbox" class="toggle toggle-lg toggle-accent" v-model="settings.midiSyncTrsIn" />
-						</label>
-					</div>
-					<div class="form-control w-full">
-						<label class="cursor-pointer label">
-							<span class="label-text text-xl">MIDI sync USB in</span>
-							<input type="checkbox" class="toggle toggle-lg toggle-accent" v-model="settings.midiSyncUsbIn" />
+							<span class="label-text text-xl"
+								  :disabled="settings.midiUsbIn == ''">MIDI sync USB in</span>
+							<input type="checkbox"
+								   class="toggle toggle-lg toggle-accent"
+								   v-model="settings.midiSyncUsbIn"
+								   :disabled="settings.midiUsbIn == ''" />
 						</label>
 					</div>
 				</div>
@@ -307,8 +378,8 @@ if (devices.length > 0) {
 				</div>
 			</div>
 
-			<div v-if="saving" class="grid items-center justify-center w-full h-full rounded-xl bg-base-300 bg-opacity-50"></div>
-			<div v-if="loading" class="grid items-center justify-center w-full h-full rounded-xl bg-base-300">
+			<div v-if="saving" class="relative grid items-center justify-center w-full h-full rounded-xl bg-base-300 bg-opacity-50"></div>
+			<div v-if="loading" class="relative grid items-center justify-center w-full h-full rounded-xl bg-base-300">
 				<div class="grid justify-center items-center gap-4">
 					<div class="loading loading-spinner loading-lg mx-auto"></div>
 					<p class="text-lg text-neutral">Retrieving data from device</p>
@@ -347,4 +418,47 @@ if (devices.length > 0) {
 </template>
 
 <style scoped lang="postcss">
+.label-text {
+	@apply uppercase;
+	&[disabled="true"] {
+		@apply text-neutral;
+	}
+}
+
+.matrix {
+	width: calc((3rem - 1px) * 4);
+	height: calc((3rem - 1px) * 2);
+}
+
+.matrix-column {
+	&:nth-child(1) .radio {
+		border-left-width: 1px;
+	}
+}
+
+.radio {
+	@apply rounded-none;
+	width: calc(3rem - 1px);
+	height: calc(3rem - 1px);
+	border-left-width: 0;
+
+	&:not(:nth-child(1)) {
+		border-top-width: 0;
+	}
+
+	&:checked {
+		@apply radio-accent;
+		border-width: 1px;
+	}
+}
+
+.matrix-col-label {
+	position: relative;
+	left: 1.5rem;
+	max-width: calc(3rem - 1px);
+	overflow: visible;
+	white-space: nowrap;
+	transform-origin: bottom left;
+	transform: rotate(-45deg);
+}
 </style>
