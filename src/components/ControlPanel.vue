@@ -476,7 +476,7 @@ function onMatrixRadioClick(event, value) {
 					<div class="grid gap-4 form-control w-full mb-12">
 						<label class="label justify-start gap-2">
 							<span class="label-text text-xl"
-								  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">Clock subdivision</span>
+								  :disabled="(!settings.midiSyncTrsIn || !settings.midiTrsIn) && (!settings.midiSyncUsbIn || !settings.midiUsbIn)">Clock subdivision</span>
 							<div class="tooltip" data-tip="MIDI clock is 24ppm. This means that 24 clock ticks represent a single quarter note. You can divide this with the slider below so that the SB01 LFO is triggered faster or slower than the standard quarter note">
 								<button class="text-neutral"><v-icon name="md-help" scale="1.25" /></button>
 							</div>
@@ -486,42 +486,42 @@ function onMatrixRadioClick(event, value) {
 							   max="6"
 							   class="range range-accent"
 							   step="1"
-							   :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn"
+							   :disabled="(!settings.midiSyncTrsIn || !settings.midiTrsIn) && (!settings.midiSyncUsbIn || !settings.midiUsbIn)"
 							   v-model="settings.clockSubdivision" />
 						<div class="w-full flex justify-between text-xs px-2">
 							<span class="relative font-music text-3xl"
 								  :class="{'active': settings.clockSubdivision == 0}"
-								  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">
+								  :disabled="(!settings.midiSyncTrsIn || !settings.midiTrsIn) && (!settings.midiSyncUsbIn || !settings.midiUsbIn)">
 								𝅗𝅥
 							</span> <!-- 48 -->
 							<span class="relative font-music text-3xl"
 								  :class="{'active': settings.clockSubdivision == 1}"
-								  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">
+								  :disabled="(!settings.midiSyncTrsIn || !settings.midiTrsIn) && (!settings.midiSyncUsbIn || !settings.midiUsbIn)">
 								𝅘𝅥
 							</span> <!-- 24 -->
 							<span class="relative font-music text-3xl"
 								  :class="{'active': settings.clockSubdivision == 2}"
-								  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">
+								  :disabled="(!settings.midiSyncTrsIn || !settings.midiTrsIn) && (!settings.midiSyncUsbIn || !settings.midiUsbIn)">
 								𝅘𝅥<span class="font-sans absolute -top-3">³</span>
 							</span> <!-- 16 -->
 							<span class="relative font-music text-3xl"
 								  :class="{'active': settings.clockSubdivision == 3}"
-								  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">
+								  :disabled="(!settings.midiSyncTrsIn || !settings.midiTrsIn) && (!settings.midiSyncUsbIn || !settings.midiUsbIn)">
 								𝅘𝅥𝅯
 							</span> <!-- 12 -->
 							<span class="relative font-music text-3xl"
 								  :class="{'active': settings.clockSubdivision == 4}"
-								  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">
+								  :disabled="(!settings.midiSyncTrsIn || !settings.midiTrsIn) && (!settings.midiSyncUsbIn || !settings.midiUsbIn)">
 								𝅘𝅥𝅯<span class="font-sans absolute -top-3">³</span>
 							</span> <!-- 8 -->
 							<span class="relative font-music text-3xl"
 								  :class="{'active': settings.clockSubdivision == 5}"
-								  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">
+								  :disabled="(!settings.midiSyncTrsIn || !settings.midiTrsIn) && (!settings.midiSyncUsbIn || !settings.midiUsbIn)">
 								𝅘𝅥𝅰
 							</span> <!-- 6 -->
 							<span class="relative font-music text-3xl"
 								  :class="{'active': settings.clockSubdivision == 6}"
-								  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">
+								  :disabled="(!settings.midiSyncTrsIn || !settings.midiTrsIn) && (!settings.midiSyncUsbIn || !settings.midiUsbIn)">
 								𝅘𝅥𝅰<span class="font-sans absolute -top-3">³</span>
 							</span> <!-- 4 -->
 						</div>
