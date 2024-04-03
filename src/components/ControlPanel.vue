@@ -133,10 +133,14 @@ function onSerialData(data) {
 	}
 	// External MIDI <--
 
-	settings.value.midiTrsIn = matrixSettings.intMidiTrsIn ? 'internal' : 'external';
-	settings.value.midiUsbIn = matrixSettings.intMidiUsbIn ? 'internal' : 'external';
-	settings.value.midiTrsOut = matrixSettings.intMidiTrsOut ? 'internal' : 'external';
-	settings.value.midiUsbOut = matrixSettings.intMidiUsbOut ? 'internal' : 'external';
+	settings.value.midiTrsIn = matrixSettings.intMidiTrsIn ? 'internal' : '';
+	settings.value.midiTrsIn = matrixSettings.extMidiTrsIn ? 'external' : settings.value.midiTrsIn;
+	settings.value.midiUsbIn = matrixSettings.intMidiUsbIn ? 'internal' : '';
+	settings.value.midiUsbIn = matrixSettings.extMidiUsbIn ? 'external' : settings.value.midiUsbIn;
+	settings.value.midiTrsOut = matrixSettings.intMidiTrsOut ? 'internal' : '';
+	settings.value.midiTrsOut = matrixSettings.extMidiTrsOut ? 'external' : settings.value.midiTrsOut;
+	settings.value.midiUsbOut = matrixSettings.intMidiUsbOut ? 'internal' : '';
+	settings.value.midiUsbOut = matrixSettings.extMidiUsbOut ? 'external' : settings.value.midiUsbOut;
 
 	if (message.indexOf('midi_sync_trs_in=') !== -1) {
 		console.log('MIDI sync TRS in:', !!data.getUint8(17));
@@ -363,21 +367,21 @@ function onMatrixRadioClick(event, value) {
 								   :class="{'text-accent': settings.midiUsbOut != ''}">MIDI out USB</label>
 						</div>
 						<div class="grid row-start-2 grid-rows-2 items-center justify-end pr-3 w-0">
-							<label class="label-text text-lg text-right">Internal</label>
 							<label class="label-text text-lg text-right">External</label>
+							<label class="label-text text-lg text-right">Internal</label>
 						</div>
 						<div class="grid row-start-2 grid-cols-4 border-primary matrix">
 							<div class="grid matrix-column">
 								<input type="radio"
 									   name="radio-1"
 									   class="radio"
-									   value="internal"
+									   value="external"
 									   v-model="settings.midiTrsIn"
 									   @click="onMatrixRadioClick($event, 'midiTrsIn')" />
 								<input type="radio"
 									   name="radio-1"
 									   class="radio"
-									   value="external"
+									   value="internal"
 									   v-model="settings.midiTrsIn"
 									   @click="onMatrixRadioClick($event, 'midiTrsIn')" />
 							</div>
@@ -385,13 +389,13 @@ function onMatrixRadioClick(event, value) {
 								<input type="radio"
 									   name="radio-2"
 									   class="radio"
-									   value="internal"
+									   value="external"
 									   v-model="settings.midiUsbIn"
 									   @click="onMatrixRadioClick($event, 'midiUsbIn')" />
 								<input type="radio"
 									   name="radio-2"
 									   class="radio"
-									   value="external"
+									   value="internal"
 									   v-model="settings.midiUsbIn"
 									   @click="onMatrixRadioClick($event, 'midiUsbIn')" />
 							</div>
@@ -399,13 +403,13 @@ function onMatrixRadioClick(event, value) {
 								<input type="radio"
 									   name="radio-3"
 									   class="radio"
-									   value="internal"
+									   value="external"
 									   v-model="settings.midiTrsOut"
 									   @click="onMatrixRadioClick($event, 'midiTrsOut')" />
 								<input type="radio"
 									   name="radio-3"
 									   class="radio"
-									   value="external"
+									   value="internal"
 									   v-model="settings.midiTrsOut"
 									   @click="onMatrixRadioClick($event, 'midiTrsOut')" />
 							</div>
@@ -413,13 +417,13 @@ function onMatrixRadioClick(event, value) {
 								<input type="radio"
 									   name="radio-4"
 									   class="radio"
-									   value="internal"
+									   value="external"
 									   v-model="settings.midiUsbOut"
 									   @click="onMatrixRadioClick($event, 'midiUsbOut')" />
 								<input type="radio"
 									   name="radio-4"
 									   class="radio"
-									   value="external"
+									   value="internal"
 									   v-model="settings.midiUsbOut"
 									   @click="onMatrixRadioClick($event, 'midiUsbOut')" />
 							</div>
@@ -431,7 +435,7 @@ function onMatrixRadioClick(event, value) {
 							<label class="cursor-pointer label">
 								<span class="label-text text-xl"
 									  :disabled="settings.midiTrsIn == '' && settings.midiUsbIn == ''">MIDI channel in</span>
-								<select class="select select-accent"
+								<select class="select select-neutral"
 										v-model="settings.midiChannelIn"
 										:disabled="settings.midiTrsIn == '' && settings.midiUsbIn == ''">
 									<option v-for="(n, index) in 16" :value="index">{{ n }}</option>
@@ -442,7 +446,7 @@ function onMatrixRadioClick(event, value) {
 							<label class="cursor-pointer label">
 								<span class="label-text text-xl"
 									  :disabled="settings.midiTrsOut == '' && settings.midiUsbOut == ''">MIDI channel out</span>
-								<select class="select select-accent"
+								<select class="select select-neutral"
 										v-model="settings.midiChannelOut"
 										:disabled="settings.midiTrsOut == '' && settings.midiUsbOut == ''">
 									<option v-for="(n, index) in 16" :value="index">{{ n }}</option>
@@ -484,7 +488,7 @@ function onMatrixRadioClick(event, value) {
 						<input type="range"
 							   min="0"
 							   max="6"
-							   class="range range-accent"
+							   class="range range-neutral"
 							   step="1"
 							   :disabled="(!settings.midiSyncTrsIn || !settings.midiTrsIn) && (!settings.midiSyncUsbIn || !settings.midiUsbIn)"
 							   v-model="settings.clockSubdivision" />
@@ -528,7 +532,7 @@ function onMatrixRadioClick(event, value) {
 					</div>
 
 					<div>
-						<button type="button" @click="save" class="btn btn-lg btn-accent w-full">Save
+						<button type="button" @click="save" class="btn btn-lg btn-outline w-full">Save
 							<span v-if="saving" class="loading loading-spinner loading-sm"></span>
 						</button>
 					</div>
@@ -577,6 +581,7 @@ function onMatrixRadioClick(event, value) {
 <style scoped lang="postcss">
 .label-text {
 	@apply uppercase;
+
 	&[disabled="true"] {
 		@apply text-neutral;
 	}
@@ -589,34 +594,35 @@ function onMatrixRadioClick(event, value) {
 
 .matrix-column {
 	&:nth-child(1) .radio {
-		border-left-width: 1px;
+		border-left-width: 2px;
+
 		&:nth-child(1) {
-			border-top-left-radius: 0.5rem !important;
+			@apply rounded-tl-md;
 		}
 
 		&:last-child {
-			border-bottom-left-radius: 0.5rem !important;
+			@apply rounded-bl-md;
 		}
 	}
 
 	&:last-child .radio {
 		&:nth-child(1) {
-			border-top-right-radius: 0.5rem !important;
+			@apply rounded-tr-md;
 		}
 
 		&:last-child {
-			border-bottom-right-radius: 0.5rem !important;
+			@apply rounded-br-md;
 		}
 	}
 }
 
 .radio {
 	@apply rounded-none bg-base-100;
-	width: calc(3rem - 1px);
-	height: calc(3rem - 1px);
-	border-width: 1px;
+	width: calc(3rem - 2px);
+	height: calc(3rem - 2px);
+	border-width: 2px;
 	border-left-width: 0;
-	border-color: theme(colors.accent);
+	border-color: theme(colors.base-300);
 
 	&:not(:nth-child(1)):not(checked) {
 		border-top-width: 0;
@@ -624,7 +630,10 @@ function onMatrixRadioClick(event, value) {
 
 	&:checked {
 		@apply bg-accent;
-		border-width: 1px;
+		animation: radiomark var(--animation-input, 0.2s) ease-out;
+		box-shadow:
+		0 0 0 10px theme(colors.base-100) inset,
+		0 0 0 10px theme(colors.base-100) inset;
 	}
 }
 
@@ -639,18 +648,18 @@ function onMatrixRadioClick(event, value) {
 }
 
 .font-music {
-	@apply text-neutral;
+	@apply text-neutral/80;
 
 	&.active {
 		@apply !text-accent;
 	}
 
 	&.active[disabled="true"] {
-		@apply !text-neutral-content opacity-50;
+		@apply !text-neutral;
 	}
 
 	&[disabled="true"] {
-		@apply !text-neutral;
+		@apply !text-neutral/35;
 	}
 }
 
@@ -665,6 +674,43 @@ function onMatrixRadioClick(event, value) {
 
 	&::-moz-range-track {
 		@apply bg-base-content/5;
+	}
+}
+
+@keyframes radiomark {
+	0% {
+		box-shadow:
+		0 0 0 16px theme(colors.base-100) inset,
+		0 0 0 16px theme(colors.base-100) inset;
+	}
+	50% {
+		box-shadow:
+		0 0 0 8px theme(colors.base-100) inset,
+		0 0 0 8px theme(colors.base-100) inset;
+	}
+	100% {
+		box-shadow:
+		0 0 0 10px theme(colors.base-100) inset,
+		0 0 0 10px theme(colors.base-100) inset;
+	}
+}
+
+[data-theme="superlative"] {
+	.rounded-lg,
+	.rounded-t-lg,
+	.rounded-b-lg,
+	.rounded-l-lg,
+	.rounded-r-lg,
+	.rounded-tl-lg,
+	.rounded-tr-lg,
+	.rounded-bl-lg,
+	.rounded-br-lg,
+	.rounded-xl,
+	.rounded-t-xl,
+	.rounded-b-xl,
+	.rounded-l-xl,
+	.rounded-r-xl {
+		@apply rounded-none;
 	}
 }
 </style>
