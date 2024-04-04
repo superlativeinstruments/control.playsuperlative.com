@@ -47,8 +47,8 @@ module.exports = {
 	theme: {
 		extend: {
 			fontFamily: {
-				'sans': ['Roboto', ...defaultTheme.fontFamily.sans],
-				'sans-condensed': ['Roboto\ Condensed', ...defaultTheme.fontFamily.sans],
+				'sans': ['SL-Regular', 'Roboto', ...defaultTheme.fontFamily.sans],
+				'sans-condensed': ['SL-Regular-Condensed', 'Roboto\ Condensed', ...defaultTheme.fontFamily.sans],
 				'music': ['Noto\ Music'],
 			},
 		},

@@ -346,7 +346,7 @@ function onMatrixRadioClick(event, value) {
 <template>
 	<div v-if="webusbSupported" class="">
 		<div v-if="state == states.WAITING_FOR_REQUEST">
-			<button @click="requestDevice" class="btn btn-lg btn-primary">Connect <v-icon name="md-usb" scale="1.5" /></button>
+			<button @click="requestDevice" class="btn btn-lg btn-outline">Connect <v-icon name="md-usb" scale="1.5" /></button>
 		</div>
 
 		<div v-if="state == states.READY" class="hero bg-base-300 w-screen max-w-xl rounded-xl">
@@ -456,7 +456,7 @@ function onMatrixRadioClick(event, value) {
 						<div class="form-control w-full">
 							<label class="cursor-pointer label">
 								<span class="label-text text-xl"
-									  :disabled="settings.midiTrsIn == ''">MIDI sync TRS in</span>
+									  :disabled="settings.midiTrsIn == ''">MIDI clock TRS in</span>
 								<input type="checkbox"
 									   class="toggle toggle-lg toggle-accent"
 									   v-model="settings.midiSyncTrsIn"
@@ -467,7 +467,7 @@ function onMatrixRadioClick(event, value) {
 						<div class="form-control w-full">
 							<label class="cursor-pointer label">
 								<span class="label-text text-xl"
-									  :disabled="settings.midiUsbIn == ''">MIDI sync USB in</span>
+									  :disabled="settings.midiUsbIn == ''">MIDI clock USB in</span>
 								<input type="checkbox"
 									   class="toggle toggle-lg toggle-accent"
 									   v-model="settings.midiSyncUsbIn"
@@ -583,7 +583,7 @@ function onMatrixRadioClick(event, value) {
 	@apply uppercase;
 
 	&[disabled="true"] {
-		@apply text-neutral;
+		@apply text-neutral cursor-not-allowed;
 	}
 }
 
@@ -629,11 +629,20 @@ function onMatrixRadioClick(event, value) {
 	}
 
 	&:checked {
-		@apply bg-accent;
+		position: relative;
+	}
+
+	&:checked::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 50%;
+		height: 50%;
+		background-color: theme(colors.accent);
+		border-radius: 0.3rem;
 		animation: radiomark var(--animation-input, 0.2s) ease-out;
-		box-shadow:
-		0 0 0 10px theme(colors.base-100) inset,
-		0 0 0 10px theme(colors.base-100) inset;
 	}
 }
 
@@ -649,6 +658,7 @@ function onMatrixRadioClick(event, value) {
 
 .font-music {
 	@apply text-neutral/80;
+	user-select: none;
 
 	&.active {
 		@apply !text-accent;
@@ -679,19 +689,16 @@ function onMatrixRadioClick(event, value) {
 
 @keyframes radiomark {
 	0% {
-		box-shadow:
-		0 0 0 16px theme(colors.base-100) inset,
-		0 0 0 16px theme(colors.base-100) inset;
+		width: 70%;
+		height: 70%;
 	}
 	50% {
-		box-shadow:
-		0 0 0 8px theme(colors.base-100) inset,
-		0 0 0 8px theme(colors.base-100) inset;
+		width: 45%;
+		height: 45%;
 	}
 	100% {
-		box-shadow:
-		0 0 0 10px theme(colors.base-100) inset,
-		0 0 0 10px theme(colors.base-100) inset;
+		width: 50%;
+		height: 50%;
 	}
 }
 
