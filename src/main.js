@@ -4,11 +4,15 @@ import './style.css'
 import App from './App.vue'
 
 import {
+	MdDarkmode,
+	MdLightmode,
 	MdHelp,
 	MdUsb,
 } from 'oh-vue-icons/icons'
 
 addIcons(
+	MdDarkmode,
+	MdLightmode,
 	MdHelp,
 	MdUsb,
 )

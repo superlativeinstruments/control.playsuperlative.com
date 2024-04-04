@@ -673,6 +673,27 @@ function onMatrixRadioClick(event, value) {
 	}
 }
 
+.range {
+	&:focus-visible::-webkit-slider-thumb {
+		--focus-shadow: 0 0 0 4px theme(colors.accent) inset, 0 0 0 1rem theme(colors.base-100) inset;
+	}
+
+	&::-webkit-slider-thumb {
+		@apply rounded-box bg-base-100 relative h-6 w-6 border-none;
+		appearance: none;
+		-webkit-appearance: none;
+		top: 50%;
+		color: var(--range-shdw);
+		transform: translateY(-50%);
+		--filler-size: 100rem;
+		--filler-offset: 0.6rem;
+		box-shadow:
+		0 0 0 2px var(--range-shdw) inset,
+		var(--focus-shadow, 0 0),
+		calc(var(--filler-size) * -1 - var(--filler-offset)) 0 0 var(--filler-size);
+	}
+}
+
 .range[disabled] {
 	--range-shdw: theme(colors.base-200);
 
@@ -684,6 +705,14 @@ function onMatrixRadioClick(event, value) {
 
 	&::-moz-range-track {
 		@apply bg-base-content/5;
+	}
+}
+
+.toggle {
+	@apply bg-neutral border-none border-opacity-100;
+
+	&:checked {
+		@apply bg-accent;
 	}
 }
 
