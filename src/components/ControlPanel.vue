@@ -13,10 +13,10 @@ let webusbSupported = ref(true);
 let loading = ref(true);
 let saving = ref(false);
 let settings = ref({
-	midiTrsIn: 'internal',
-	midiUsbIn: 'internal',
-	midiTrsOut: 'internal',
-	midiUsbOut: 'internal',
+	midiTrsIn: '',
+	midiUsbIn: '',
+	midiTrsOut: '',
+	midiUsbOut: '',
 
 	midiChannelIn: 0,
 	midiChannelOut: 0,

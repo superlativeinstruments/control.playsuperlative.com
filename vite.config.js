@@ -9,8 +9,8 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
 		return {
 			plugins: [vue()],
 			server: {
-				host: 'control.playsuperlative.com',
-				// port: 433,
+				host: '0.0.0.0',
+				port: 443,
 				strictPort: true,
 				https: {
 					key: fs.readFileSync('./certs/srv.key'),

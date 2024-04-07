@@ -31,29 +31,26 @@ class SerialPort {
 		}
 
 		const interfaces = this.device.configuration.interfaces;
-		interfaces.forEach(_interface => {
-			_interface.alternates.forEach(alternate => {
-				if (alternate.interfaceClass === 0x0a) {
-					this.interfaceNumber = _interface.interfaceNumber;
-					alternate.endpoints.forEach(endpoint => {
-						if (endpoint.direction === 'in') {
-							this.endpointIn = endpoint.endpointNumber;
-						} else if (endpoint.direction === 'out') {
-							this.endpointOut = endpoint.endpointNumber;
-						}
-					});
-				}
-			});
-		});
+		const compatible_interfaces = interfaces.filter(
+			_interface => _interface.alternates.find(
+				alternate => alternate.interfaceClass === 0xff
+			)
+		);
+		this.interfaceNumber = compatible_interfaces[1].interfaceNumber;
+		const alternate = compatible_interfaces[1].alternates[0];
+		this.endpointIn = alternate.endpoints.find(endpoint => endpoint.direction === 'in').endpointNumber;
+		this.endpointOut = alternate.endpoints.find(endpoint => endpoint.direction === 'out').endpointNumber;
 
         await this.device.claimInterface(this.interfaceNumber);
         await this.device.controlTransferOut({
-            requestType: 'class',
+            requestType: 'vendor',
             recipient: 'interface',
             request: 0x22,
             value: 0x01,
             index: this.interfaceNumber
         });
+
+		// return;
 
 		let result;
 		let readLoop = async () => {
