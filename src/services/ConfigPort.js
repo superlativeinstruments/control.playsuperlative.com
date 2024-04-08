@@ -36,10 +36,8 @@ class ConfigPort {
 				alternate => alternate.interfaceClass === 0xFF
 			)
 		);
+
 		this.interfaceNumber = compatible_interfaces[0].interfaceNumber;
-		const alternate = compatible_interfaces[0].alternates[0];
-		this.endpointIn = alternate.endpoints.find(endpoint => endpoint.direction === 'in').endpointNumber;
-		this.endpointOut = alternate.endpoints.find(endpoint => endpoint.direction === 'out').endpointNumber;
 
         await this.device.claimInterface(this.interfaceNumber);
 
