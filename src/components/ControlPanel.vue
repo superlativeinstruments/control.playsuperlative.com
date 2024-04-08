@@ -286,9 +286,11 @@ function onMatrixRadioClick(event, value) {
 			<button @click="requestDevice" class="btn btn-lg btn-outline">Connect <v-icon name="md-usb" scale="1.5" /></button>
 		</div>
 
-		<div v-if="state == states.READY" class="hero bg-base-300 w-screen max-w-xl rounded-xl">
+		<div v-if="state == states.READY" class="hero bg-base-300 w-full max-w-xl rounded-xl">
 			<div>
-				<header class="w-full bg-black/15 rounded-t-xl mb-8 p-2 px-4"><h1 class="text-neutral">SB01 / CONTROLS</h1></header>
+				<header class="w-full bg-black/15 rounded-t-xl mb-8 p-2 px-4">
+					<h1 class="text-neutral">SB01 / CONTROLS</h1>
+				</header>
 
 				<div class="grid gap-4 w-screen max-w-xl p-12 pt-0">
 
@@ -516,43 +518,6 @@ function onMatrixRadioClick(event, value) {
 </template>
 
 <style scoped lang="postcss">
-.label-text {
-	@apply uppercase;
-
-	&[disabled="true"] {
-		@apply text-neutral cursor-not-allowed;
-	}
-}
-
-.matrix {
-	width: calc((3rem - 1px) * 4);
-	height: calc((3rem - 1px) * 2);
-}
-
-.matrix-column {
-	&:nth-child(1) .radio {
-		border-left-width: 2px;
-
-		&:nth-child(1) {
-			@apply rounded-tl-md;
-		}
-
-		&:last-child {
-			@apply rounded-bl-md;
-		}
-	}
-
-	&:last-child .radio {
-		&:nth-child(1) {
-			@apply rounded-tr-md;
-		}
-
-		&:last-child {
-			@apply rounded-br-md;
-		}
-	}
-}
-
 .radio {
 	@apply rounded-none bg-base-100;
 	width: calc(3rem - 2px);
@@ -583,76 +548,6 @@ function onMatrixRadioClick(event, value) {
 	}
 }
 
-.matrix-col-label {
-	position: relative;
-	left: 1.5rem;
-	max-width: calc(3rem - 2px);
-	overflow: visible;
-	white-space: nowrap;
-	transform-origin: bottom left;
-	transform: rotate(-45deg);
-}
-
-.font-music {
-	@apply text-neutral/80;
-	user-select: none;
-
-	&.active {
-		@apply !text-accent;
-	}
-
-	&.active[disabled="true"] {
-		@apply !text-neutral;
-	}
-
-	&[disabled="true"] {
-		@apply !text-neutral/35;
-	}
-}
-
-.range {
-	&:focus-visible::-webkit-slider-thumb {
-		--focus-shadow: 0 0 0 4px theme(colors.accent) inset, 0 0 0 1rem theme(colors.base-100) inset;
-	}
-
-	&::-webkit-slider-thumb {
-		@apply rounded-box bg-base-100 relative h-6 w-6 border-none;
-		appearance: none;
-		-webkit-appearance: none;
-		top: 50%;
-		color: var(--range-shdw);
-		transform: translateY(-50%);
-		--filler-size: 100rem;
-		--filler-offset: 0.6rem;
-		box-shadow:
-		0 0 0 2px var(--range-shdw) inset,
-		var(--focus-shadow, 0 0),
-		calc(var(--filler-size) * -1 - var(--filler-offset)) 0 0 var(--filler-size);
-	}
-}
-
-.range[disabled] {
-	--range-shdw: theme(colors.base-200);
-
-	@apply cursor-not-allowed;
-
-	&::-webkit-slider-runnable-track {
-		@apply bg-base-content/5;
-	}
-
-	&::-moz-range-track {
-		@apply bg-base-content/5;
-	}
-}
-
-.toggle {
-	@apply bg-neutral border-none border-opacity-100;
-
-	&:checked {
-		@apply bg-accent;
-	}
-}
-
 @keyframes radiomark {
 	0% {
 		width: 70%;
@@ -665,25 +560,6 @@ function onMatrixRadioClick(event, value) {
 	100% {
 		width: 50%;
 		height: 50%;
-	}
-}
-
-[data-theme="superlative"] {
-	.rounded-lg,
-	.rounded-t-lg,
-	.rounded-b-lg,
-	.rounded-l-lg,
-	.rounded-r-lg,
-	.rounded-tl-lg,
-	.rounded-tr-lg,
-	.rounded-bl-lg,
-	.rounded-br-lg,
-	.rounded-xl,
-	.rounded-t-xl,
-	.rounded-b-xl,
-	.rounded-l-xl,
-	.rounded-r-xl {
-		@apply rounded-none;
 	}
 }
 </style>

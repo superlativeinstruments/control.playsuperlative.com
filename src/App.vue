@@ -13,9 +13,9 @@ function toggleThemes() {
 <template>
 	<Suspense>
 	<template #default>
-		<main class="w-screen h-screen grid gap-4 p-4 justify-items-center items-center">
+		<main class="min-h-screen grid gap-4 p-4 py-12 justify-items-center items-center">
 
-			<button @click="toggleThemes" class="absolute top-4 right-4">
+			<button @click="toggleThemes" class="fixed top-4 right-4">
 				<v-icon name="md-darkmode" v-if="theme == 'cmyk'" />
 				<v-icon name="md-lightmode" v-if="theme == 'dark'" />
 			</button>
