@@ -1,6 +1,6 @@
 <script>
 import { ref, reactive, watch } from 'vue';
-import SerialPort from '../services/SerialPort'
+import ConfigPort from '../services/ConfigPort'
 
 const vendorId = 0x0483;
 const compatibleDevices = [
@@ -8,7 +8,7 @@ const compatibleDevices = [
 ];
 
 let device;
-let serialPort;
+let configPort;
 let webusbSupported = ref(true);
 let loading = ref(true);
 let saving = ref(false);
@@ -60,6 +60,22 @@ let clockSubdivisionMap = [
 	4
 ];
 
+const configAddresses = {
+	MIDI_SYNC_TRS_IN: 0x00,
+	MIDI_SYNC_USB_IN: 0x01,
+	CLOCK_DIVISION: 0x02,
+	MIDI_CHAN_IN: 0x03,
+	MIDI_CHAN_OUT: 0x04,
+	INT_MIDI_TRS_IN: 0x05,
+	INT_MIDI_USB_IN: 0x06,
+	INT_MIDI_TRS_OUT: 0x07,
+	INT_MIDI_USB_OUT: 0x08,
+	EXT_MIDI_TRS_IN: 0x09,
+	EXT_MIDI_USB_IN: 0x0A,
+	EXT_MIDI_TRS_OUT: 0x0B,
+	EXT_MIDI_USB_OUT: 0x0C,
+};
+
 /**
  * Concatenate two typed arrays of same type.
  *
@@ -85,53 +101,48 @@ async function timeout(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function onSerialData(data) {
-	const textDecoder = new TextDecoder();
-	const message = textDecoder.decode(data);
+async function onConfigConnect() {
+	console.log('Config port connected');
+	let result;
 
-	// Internal MIDI -->
-	if (message.indexOf('int_midi_trs_in=') !== -1) {
-		console.log('Internal MIDI TRS in:', !!data.getUint8(16));
-		matrixSettings.intMidiTrsIn = !!data.getUint8(16);
-	}
+	result = await configPort.read(configAddresses.MIDI_SYNC_TRS_IN);
+	settings.value.midiSyncTrsIn = !!result;
 
-	if (message.indexOf('int_midi_usb_in=') !== -1) {
-		console.log('Internal MIDI USB in:', !!data.getUint8(16));
-		matrixSettings.intMidiUsbIn = !!data.getUint8(16);
-	}
+	result = await configPort.read(configAddresses.MIDI_SYNC_USB_IN);
+	settings.value.midiSyncUsbIn = !!result;
 
-	if (message.indexOf('int_midi_trs_out=') !== -1) {
-		console.log('Internal MIDI TRS in:', !!data.getUint8(17));
-		matrixSettings.intMidiTrsOut = !!data.getUint8(17);
-	}
+	result = await configPort.read(configAddresses.CLOCK_DIVISION);
+	settings.value.clockSubdivision = clockSubdivisionMap.indexOf(result);
 
-	if (message.indexOf('int_midi_usb_out=') !== -1) {
-		console.log('Internal MIDI USB in:', !!data.getUint8(17));
-		matrixSettings.intMidiUsbOut = !!data.getUint8(17);
-	}
-	// Internal MIDI <--
+	result = await configPort.read(configAddresses.MIDI_CHAN_IN);
+	settings.value.midiChannelIn = result;
 
-	// External MIDI -->
-	if (message.indexOf('ext_midi_trs_in=') !== -1) {
-		console.log('External MIDI TRS in:', !!data.getUint8(16));
-		matrixSettings.extMidiTrsIn = !!data.getUint8(16);
-	}
+	result = await configPort.read(configAddresses.MIDI_CHAN_OUT);
+	settings.value.midiChannelOut = result;
 
-	if (message.indexOf('ext_midi_usb_in=') !== -1) {
-		console.log('External MIDI USB in:', !!data.getUint8(16));
-		matrixSettings.extMidiUsbIn = !!data.getUint8(16);
-	}
+	result = await configPort.read(configAddresses.INT_MIDI_TRS_IN);
+	matrixSettings.intMidiTrsIn = !!result;
 
-	if (message.indexOf('ext_midi_trs_out=') !== -1) {
-		console.log('External MIDI TRS in:', !!data.getUint8(17));
-		matrixSettings.extMidiTrsOut = !!data.getUint8(17);
-	}
+	result = await configPort.read(configAddresses.INT_MIDI_USB_IN);
+	matrixSettings.intMidiUsbIn = !!result;
 
-	if (message.indexOf('ext_midi_usb_out=') !== -1) {
-		console.log('External MIDI USB in:', !!data.getUint8(17));
-		matrixSettings.extMidiUsbOut = !!data.getUint8(17);
-	}
-	// External MIDI <--
+	result = await configPort.read(configAddresses.INT_MIDI_TRS_OUT);
+	matrixSettings.intMidiTrsOut = !!result;
+
+	result = await configPort.read(configAddresses.INT_MIDI_USB_OUT);
+	matrixSettings.intMidiUsbOut = !!result;
+
+	result = await configPort.read(configAddresses.EXT_MIDI_TRS_IN);
+	matrixSettings.extMidiTrsIn = !!result;
+
+	result = await configPort.read(configAddresses.EXT_MIDI_USB_IN);
+	matrixSettings.extMidiUsbIn = !!result;
+
+	result = await configPort.read(configAddresses.EXT_MIDI_TRS_OUT);
+	matrixSettings.extMidiTrsOut = !!result;
+
+	result = await configPort.read(configAddresses.EXT_MIDI_USB_OUT);
+	matrixSettings.extMidiUsbOut = !!result;
 
 	settings.value.midiTrsIn = matrixSettings.intMidiTrsIn ? 'internal' : '';
 	settings.value.midiTrsIn = matrixSettings.extMidiTrsIn ? 'external' : settings.value.midiTrsIn;
@@ -142,94 +153,19 @@ function onSerialData(data) {
 	settings.value.midiUsbOut = matrixSettings.intMidiUsbOut ? 'internal' : '';
 	settings.value.midiUsbOut = matrixSettings.extMidiUsbOut ? 'external' : settings.value.midiUsbOut;
 
-	if (message.indexOf('midi_sync_trs_in=') !== -1) {
-		console.log('MIDI sync TRS in:', !!data.getUint8(17));
-		settings.value.midiSyncTrsIn = !!data.getUint8(17);
-	}
-
-	if (message.indexOf('midi_sync_usb_in=') !== -1) {
-		console.log('MIDI sync USB in:', !!data.getUint8(17));
-		settings.value.midiSyncUsbIn = !!data.getUint8(17);
-	}
-
-	if (message.indexOf('midi_chan_in=') !== -1) {
-		console.log('MIDI channel in:', data.getUint8(13));
-		settings.value.midiChannelIn = data.getUint8(13);
-	}
-
-	if (message.indexOf('midi_chan_out=') !== -1) {
-		console.log('MIDI channel out:', data.getUint8(14));
-		settings.value.midiChannelOut = data.getUint8(14);
-	}
-
-	if (message.indexOf('clock_division=') !== -1) {
-		console.log('Clock division:', data.getUint8(15));
-		settings.value.clockSubdivision = clockSubdivisionMap.indexOf(data.getUint8(15));
-	}
-}
-
-async function sendCommand(command, data = null) {
-	command = new TextEncoder('ascii').encode(command);
-
-	if (data === null) {
-		await serialPort.send(command);
-
-		return;
-	}
-
-	switch (typeof data) {
-		case 'string':
-			data = new TextEncoder('ascii').encode(data);
-			break;
-		case 'number':
-			data = new Uint8Array([data]);
-			break;
-		default:
-			if (data instanceof Array) {
-				data = new Uint8Array(data);
-			}
-			break;
-	}
-
-	const message = concatTypedArrays(command, data);
-
-	await serialPort.send(message);
-}
-
-async function onSerialConnect() {
-	console.log('Serial port connected');
-
-	await sendCommand('int_midi_trs_in');
-	await sendCommand('int_midi_usb_in');
-	await sendCommand('int_midi_trs_out');
-	await sendCommand('int_midi_usb_out');
-
-	await sendCommand('ext_midi_trs_in');
-	await sendCommand('ext_midi_usb_in');
-	await sendCommand('ext_midi_trs_out');
-	await sendCommand('ext_midi_usb_out');
-
-	await sendCommand('midi_sync_trs_in');
-	await sendCommand('midi_sync_usb_in');
-	await sendCommand('midi_chan_in');
-	await sendCommand('midi_chan_out');
-	await sendCommand('clock_division');
-
-	await timeout(1000);
+	await timeout(500);
 	loading.value = false;
 }
 
-function onSerialReadError() {
-	console.log('Serial port read error');
+function onConfigReadError() {
+	console.log('Config port read error');
 }
 
-async function serialPortConnect() {
-	console.log('Connecting to serial port');
-	serialPort.addEventListener('connect', onSerialConnect);
-	serialPort.addEventListener('data', onSerialData);
-	serialPort.addEventListener('readError', onSerialReadError);
+async function configPortConnect() {
+	console.log('Connecting to config port');
+	configPort.addEventListener('connect', onConfigConnect);
 
-	serialPort.connect();
+	configPort.connect();
 }
 
 async function searchForCompatibleDevices() {
@@ -247,8 +183,8 @@ async function onConnect() {
 
 		device = devices[0];
 		deviceName.value = device.productName;
-		serialPort = new SerialPort(device);
-		await serialPortConnect();
+		configPort = new ConfigPort(device);
+		await configPortConnect();
 
 		state.value = states.READY;
 	}
@@ -260,7 +196,7 @@ function onDisconnect() {
 
 		device.disconnected = true;
 		device = null;
-		serialPort = null;
+		configPort = null;
 
 		state.value = states.WAITING_FOR_REQUEST;
 	}
@@ -269,20 +205,21 @@ function onDisconnect() {
 async function save() {
 	saving.value = true;
 
-	await sendCommand('midi_chan_in=', settings.value.midiChannelIn);
-	await sendCommand('midi_chan_out=', settings.value.midiChannelOut);
-	await sendCommand('midi_sync_trs_in=', settings.value.midiSyncTrsIn ? 0x01 : 0x00);
-	await sendCommand('midi_sync_usb_in=', settings.value.midiSyncUsbIn ? 0x01 : 0x00);
-	await sendCommand('clock_division=', clockSubdivisionMap[settings.value.clockSubdivision]);
+	await configPort.write(configAddresses.MIDI_SYNC_TRS_IN, settings.value.midiSyncTrsIn ? 0x01 : 0x00);
+	await configPort.write(configAddresses.MIDI_SYNC_USB_IN, settings.value.midiSyncUsbIn ? 0x01 : 0x00);
+	await configPort.write(configAddresses.CLOCK_DIVISION, clockSubdivisionMap[settings.value.clockSubdivision]);
+	await configPort.write(configAddresses.MIDI_CHAN_IN, settings.value.midiChannelIn);
+	await configPort.write(configAddresses.MIDI_CHAN_OUT, settings.value.midiChannelOut);
 
-	await sendCommand('int_midi_trs_in=', settings.value.midiTrsIn === 'internal' ? 0x01 : 0x00);
-	await sendCommand('int_midi_usb_in=', settings.value.midiUsbIn === 'internal' ? 0x01 : 0x00);
-	await sendCommand('int_midi_trs_out=', settings.value.midiTrsOut === 'internal' ? 0x01 : 0x00);
-	await sendCommand('int_midi_usb_out=', settings.value.midiUsbOut === 'internal' ? 0x01 : 0x00);
-	await sendCommand('ext_midi_trs_in=', settings.value.midiTrsIn === 'external' ? 0x01 : 0x00);
-	await sendCommand('ext_midi_usb_in=', settings.value.midiUsbIn === 'external' ? 0x01 : 0x00);
-	await sendCommand('ext_midi_trs_out=', settings.value.midiTrsOut === 'external' ? 0x01 : 0x00);
-	await sendCommand('ext_midi_usb_out=', settings.value.midiUsbOut === 'external' ? 0x01 : 0x00);
+	await configPort.write(configAddresses.INT_MIDI_TRS_IN, settings.value.midiTrsIn === 'internal' ? 0x01 : 0x00);
+	await configPort.write(configAddresses.INT_MIDI_USB_IN, settings.value.midiUsbIn === 'internal' ? 0x01 : 0x00);
+	await configPort.write(configAddresses.INT_MIDI_TRS_OUT, settings.value.midiTrsOut === 'internal' ? 0x01 : 0x00);
+	await configPort.write(configAddresses.INT_MIDI_USB_OUT, settings.value.midiUsbOut === 'internal' ? 0x01 : 0x00);
+
+	await configPort.write(configAddresses.EXT_MIDI_TRS_IN, settings.value.midiTrsIn === 'external' ? 0x01 : 0x00);
+	await configPort.write(configAddresses.EXT_MIDI_USB_IN, settings.value.midiUsbIn === 'external' ? 0x01 : 0x00);
+	await configPort.write(configAddresses.EXT_MIDI_TRS_OUT, settings.value.midiTrsOut === 'external' ? 0x01 : 0x00);
+	await configPort.write(configAddresses.EXT_MIDI_USB_OUT, settings.value.midiUsbOut === 'external' ? 0x01 : 0x00);
 
 	saving.value = false;
 }
@@ -311,8 +248,8 @@ async function requestDevice() {
 		});
 
 		deviceName.value = device.productName;
-		serialPort = new SerialPort(device);
-		await serialPortConnect();
+		configPort = new ConfigPort(device);
+		await configPortConnect();
 
 		state.value = states.READY;
 	} catch (error) {
@@ -327,8 +264,8 @@ if (webusbSupported.value) {
 if (devices.length > 0) {
 	device = devices[0];
 	deviceName.value = device.productName;
-	serialPort = new SerialPort(device);
-	await serialPortConnect();
+	configPort = new ConfigPort(device);
+	await configPortConnect();
 
 	state.value = states.READY;
 } else {
