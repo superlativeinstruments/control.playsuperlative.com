@@ -1,8 +1,10 @@
 <script setup>
 import { ref } from 'vue'
+import { useStorage } from '@vueuse/core'
 import ControlPanel from './components/ControlPanel.vue'
 
-const theme = ref('dark')
+const theme = useStorage('theme', 'dark')
+document.documentElement.setAttribute('data-theme', theme.value);
 
 function toggleThemes() {
 	theme.value = theme.value === 'dark' ? 'cmyk' : 'dark';
