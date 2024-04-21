@@ -42,12 +42,12 @@
 		font-style: normal;
 		font-display: block;
 	}
-}
 
-html,
-body,
-#app {
-	@apply bg-base-200;
+	html,
+	body,
+	#app {
+		@apply bg-base-200;
+	}
 }
 
 .btn {

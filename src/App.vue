@@ -26,7 +26,9 @@ function toggleThemes() {
 		</main>
 	</template>
 	<template #fallback>
-		<h2>Loading...</h2>
+		<main class="min-h-screen grid gap-4 p-4 py-12 justify-items-center items-center">
+			<h2>Loading...</h2>
+		</main>
 	</template>
 	</Suspense>
 </template>
