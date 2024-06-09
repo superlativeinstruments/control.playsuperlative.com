@@ -74,6 +74,7 @@ const configAddresses = {
 	EXT_MIDI_USB_IN: 0x0A,
 	EXT_MIDI_TRS_OUT: 0x0B,
 	EXT_MIDI_USB_OUT: 0x0C,
+	SAVE: 0x7F,
 };
 
 /**
@@ -220,6 +221,9 @@ async function save() {
 	await configPort.write(configAddresses.EXT_MIDI_USB_IN, settings.value.midiUsbIn === 'external' ? 0x01 : 0x00);
 	await configPort.write(configAddresses.EXT_MIDI_TRS_OUT, settings.value.midiTrsOut === 'external' ? 0x01 : 0x00);
 	await configPort.write(configAddresses.EXT_MIDI_USB_OUT, settings.value.midiUsbOut === 'external' ? 0x01 : 0x00);
+
+	// Send save command
+	await configPort.write(configAddresses.SAVE, 0x00);
 
 	saving.value = false;
 }
