@@ -68,4 +68,3 @@ Server should now be reachable at `https://control.playsuperlative.com:[port]`
 
 Continuous delivery is set up through [Vercel](https://vercel.com/).  
 Every push to the `main` branch gets deployed to [control.playsuperlative.com](https://control.playsuperlative.com/).  
-A CNAME DNS entry in the [A2 Hosting control panel](https://my.a2hosting.com/index.php?rp=/login) routes the domain to Vercel.
