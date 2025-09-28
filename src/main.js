@@ -8,6 +8,7 @@ import {
 	MdLightmode,
 	MdHelp,
 	MdUsb,
+	MdInfo,
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -15,6 +16,7 @@ addIcons(
 	MdLightmode,
 	MdHelp,
 	MdUsb,
+	MdInfo,
 )
 
 const appHeight = () => {

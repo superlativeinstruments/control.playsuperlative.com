@@ -1,6 +1,7 @@
 <script>
 import { ref, reactive, watch } from 'vue';
 import ControlPanelSb01 from './ControlPanelSb01.vue';
+import ControlPanelSb01Next from './ControlPanelSb01Next.vue';
 import ControlPanelCicada from './ControlPanelCicada.vue';
 
 const compatibleDevices = [
@@ -23,6 +24,7 @@ const showConnectionHelp = ref(false);
 
 let state = ref(states.WAITING_FOR_REQUEST);
 let deviceName = ref('');
+let deviceVersion = ref(0);
 
 async function searchForCompatibleDevices() {
 	let devices = await navigator.usb.getDevices();
@@ -46,6 +48,7 @@ async function onConnect() {
 
 		device.value = devices[0];
 		deviceName.value = device.value.productName;
+		deviceVersion.value = device.value.deviceVersionMajor;
 
 		state.value = states.READY;
 	}
@@ -84,6 +87,7 @@ async function requestDevice() {
 		});
 
 		deviceName.value = device.value.productName;
+		deviceVersion.value = device.value.deviceVersionMajor;
 
 		state.value = states.READY;
 	} catch (error) {
@@ -98,6 +102,7 @@ if (webusbSupported.value) {
 if (devices.length > 0) {
 	device.value = devices[0];
 	deviceName.value = device.value.productName;
+	deviceVersion.value = device.value.deviceVersionMajor;
 
 	state.value = states.READY;
 } else {
@@ -122,7 +127,8 @@ function onMatrixRadioClick(event, value) {
 		</div>
 
 		<div v-if="state == states.READY" class="hero bg-base-300 w-full max-w-xl rounded-xl">
-			<ControlPanelSb01 v-if="deviceName == 'SB01'" :device="device" :device-name='deviceName' />
+			<ControlPanelSb01 v-if="deviceName == 'SB01' && deviceVersion <= 2" :device="device" :device-name='deviceName' />
+			<ControlPanelSb01Next v-if="deviceName == 'SB01' && deviceVersion >= 3" :device="device" :device-name='deviceName' />
 			<ControlPanelCicada v-if="deviceName == 'CICADA'" :device="device" :device-name='deviceName' />
 		</div>
 
