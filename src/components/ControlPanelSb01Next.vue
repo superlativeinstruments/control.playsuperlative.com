@@ -49,6 +49,38 @@ const configAddresses = {
 let buildTime = ref(null);
 buildTime.value = new Date(0);
 
+async function onSettingChange(key, newSetting, oldSetting) {
+	console.log('Setting changed', key, newSetting, oldSetting);
+
+	if (key === 'midiSyncTrsIn') {
+		await configPort.write(configAddresses.MIDI_SYNC_TRS_IN, newSetting ? 0x01 : 0x00);
+	}
+
+	if (key === 'midiSyncUsbIn') {
+		await configPort.write(configAddresses.MIDI_SYNC_USB_IN, newSetting ? 0x01 : 0x00);
+	}
+
+	if (key === 'clockSubdivision') {
+		await configPort.write(configAddresses.CLOCK_DIVISION, clockSubdivisionMap[newSetting]);
+	}
+
+	if (key === 'intMidiChannelIn') {
+		await configPort.write(configAddresses.INT_MIDI_CHAN_IN, newSetting);
+	}
+
+	if (key === 'intMidiChannelOut') {
+		await configPort.write(configAddresses.INT_MIDI_CHAN_OUT, newSetting);
+	}
+
+	if (key === 'extMidiChannelIn') {
+		await configPort.write(configAddresses.EXT_MIDI_CHAN_IN, newSetting);
+	}
+
+	if (key === 'extMidiChannelOut') {
+		await configPort.write(configAddresses.EXT_MIDI_CHAN_OUT, newSetting);
+	}
+}
+
 /**
  * Concatenate two typed arrays of same type.
  *
@@ -116,6 +148,16 @@ async function onConfigConnect() {
 
 	result = await configPort.read(configAddresses.VERSION_SECOND);
 	buildTime.value.setSeconds(result);
+
+	Object.keys(settings.value).forEach(key => {
+		watch(
+			() => settings.value[key],
+			(newSetting, oldSetting) => {
+				console.log(`${key} changed:`, oldSetting, "→", newSetting)
+				onSettingChange(key, newSetting, oldSetting)
+			}
+		);
+	});
 
 	await timeout(500);
 	loading.value = false;
@@ -185,11 +227,15 @@ await configPortConnect();
 			</div>
 		</header>
 
-		<div class="grid gap-4 w-screen max-w-xl p-12 pt-0">
+		<div class="grid gap-6 w-screen max-w-xl p-12 pt-0">
+			<div>
+				<h4 class="text-neutral">Internal channel</h4>
+				<hr class="border-neutral/15">
+			</div>
 			<div class="grid auto-rows-fr gap-4">
 				<div class="form-control w-full">
 					<label class="cursor-pointer label">
-						<span class="label-text text-xl">INTERNAL MIDI channel in</span>
+						<span class="label-text text-xl">MIDI channel in</span>
 						<select class="select select-neutral"
 								v-model="settings.intMidiChannelIn">
 							<option v-for="(n, index) in 16" :value="index">{{ n }}</option>
@@ -198,19 +244,23 @@ await configPortConnect();
 				</div>
 				<div class="form-control w-full">
 					<label class="cursor-pointer label">
-						<span class="label-text text-xl">INTERNAL MIDI channel out</span>
+						<span class="label-text text-xl">MIDI channel out</span>
 						<select class="select select-neutral"
 								v-model="settings.intMidiChannelOut">
 							<option v-for="(n, index) in 16" :value="index">{{ n }}</option>
 						</select>
 					</label>
 				</div>
+			</div>
 
+			<div>
+				<h4 class="text-neutral">External channel</h4>
 				<hr class="border-neutral/15">
-
+			</div>
+			<div class="grid auto-rows-fr gap-4">
 				<div class="form-control w-full">
 					<label class="cursor-pointer label">
-						<span class="label-text text-xl">EXTERNAL MIDI channel in</span>
+						<span class="label-text text-xl">MIDI channel in</span>
 						<select class="select select-neutral"
 								v-model="settings.extMidiChannelIn">
 							<option v-for="(n, index) in 16" :value="index">{{ n }}</option>
@@ -219,16 +269,20 @@ await configPortConnect();
 				</div>
 				<div class="form-control w-full">
 					<label class="cursor-pointer label">
-						<span class="label-text text-xl">EXTERNAL MIDI channel out</span>
+						<span class="label-text text-xl">MIDI channel out</span>
 						<select class="select select-neutral"
 								v-model="settings.extMidiChannelOut">
 							<option v-for="(n, index) in 16" :value="index">{{ n }}</option>
 						</select>
 					</label>
 				</div>
+			</div>
 
+			<div>
+				<h4 class="text-neutral">Clock</h4>
 				<hr class="border-neutral/15">
-
+			</div>
+			<div class="grid auto-rows-fr gap-4">
 				<div class="form-control w-full">
 					<label class="cursor-pointer label">
 						<span class="label-text text-xl">MIDI clock TRS in</span>
