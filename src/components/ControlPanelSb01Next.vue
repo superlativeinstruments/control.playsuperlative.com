@@ -1,6 +1,7 @@
 <script>
 import { ref, reactive, watch } from 'vue';
 import ConfigPort from '../services/ConfigPort'
+import {getLatestRelease} from "../services/GitHub";
 
 let configPort;
 let device;
@@ -46,8 +47,11 @@ const configAddresses = {
 	SAVE: 0x7F
 };
 
-let buildTime = ref(null);
+const buildTime = ref(null);
 buildTime.value = new Date(0);
+
+const newReleaseAvailable = ref(null);
+const newBetaAvailable = ref(null);
 
 async function onSettingChange(key, newSetting, oldSetting) {
 	console.log('Setting changed', key, newSetting, oldSetting);
@@ -69,6 +73,7 @@ async function onSettingChange(key, newSetting, oldSetting) {
 	}
 
 	if (key === 'intMidiChannelOut') {
+		console.log('Writing intMidiChannelOut', newSetting);
 		await configPort.write(configAddresses.INT_MIDI_CHAN_OUT, newSetting);
 	}
 
@@ -108,6 +113,14 @@ async function timeout(ms) {
 
 async function onConfigConnect() {
 	console.log('Config port connected');
+
+	const {
+		prereleaseChangelog,
+		prereleaseDateTime,
+		releaseChangelog,
+		releaseDateTime
+	} = await getLatestRelease();
+
 	let result;
 
 	result = await configPort.read(configAddresses.MIDI_SYNC_TRS_IN);
@@ -132,22 +145,30 @@ async function onConfigConnect() {
 	settings.value.extMidiChannelOut = result;
 
 	result = await configPort.read(configAddresses.VERSION_YEAR);
-	buildTime.value.setFullYear(result);
+	buildTime.value.setUTCFullYear(result);
 
 	result = await configPort.read(configAddresses.VERSION_MONTH);
-	buildTime.value.setMonth(result);
+	buildTime.value.setUTCMonth(result - 1);
 
 	result = await configPort.read(configAddresses.VERSION_DAY);
-	buildTime.value.setDate(result);
+	buildTime.value.setUTCDate(result);
 
 	result = await configPort.read(configAddresses.VERSION_HOUR);
-	buildTime.value.setHours(result);
+	buildTime.value.setUTCHours(result);
 
 	result = await configPort.read(configAddresses.VERSION_MINUTE);
-	buildTime.value.setMinutes(result);
+	buildTime.value.setUTCMinutes(result);
 
 	result = await configPort.read(configAddresses.VERSION_SECOND);
-	buildTime.value.setSeconds(result);
+	buildTime.value.setUTCSeconds(result);
+
+	if (buildTime.value < prereleaseDateTime) {
+		newBetaAvailable.value = prereleaseDateTime;
+	}
+
+	if (buildTime.value < releaseDateTime) {
+		newReleaseAvailable.value = releaseDateTime;
+	}
 
 	Object.keys(settings.value).forEach(key => {
 		watch(
@@ -217,11 +238,26 @@ await configPortConnect();
 		<header class="w-full bg-black/15 rounded-t-xl mb-8 p-2 px-4 grid grid-cols-2">
 			<h1 class="text-neutral self-center">SB01 / CONTROLS</h1>
 			<div class="dropdown dropdown-hover dropdown-left justify-self-end self-center">
-				<v-icon role="button" name="md-info" scale="1" class="text-neutral" />
+				<v-icon role="button" name="md-info" scale="1" class="text-neutral" :class="{blink: newReleaseAvailable || newBetaAvailable}" />
 				<div tabindex="0" class="dropdown-content card">
 					<div class="card bg-base-100 w-96 shadow-sm p-2 px-4">
 							<p class="text-sm">FIRMWARE BUILD DATE</p>
 							<p class="text-sm">{{ buildTime ? buildTime.toUTCString() : 'n/a' }}</p>
+
+							<div v-if="newBetaAvailable" class="mt-4">
+								<p class="text-sm">
+								<v-icon name="md-notifications" scale="0.8" class="text-accent" />
+								NEW BETA AVAILABLE:
+								</p>
+								<p class="text-sm">{{ newBetaAvailable.toUTCString() }}</p>
+							</div>
+							<div v-if="newReleaseAvailable" class="mt-4">
+								<p class="text-sm">
+								<v-icon name="md-notificationimportant" scale="0.8" class="text-neutral" />
+								NEW RELEASE AVAILABLE:
+								</p>
+								<p class="text-sm">{{ newReleaseAvailable.toUTCString() }}</p>
+							</div>
 					</div>
 				</div>
 			</div>
@@ -380,5 +416,15 @@ hr {
 	margin: 0;
 	padding: 0;
 	align-self: center;
+}
+
+.blink {
+	animation: blinker 1.5s linear infinite;
+}
+
+@keyframes blinker {
+	50% {
+		opacity: 0.5;
+	}
 }
 </style>

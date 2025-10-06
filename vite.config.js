@@ -10,13 +10,6 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
 			plugins: [vue()],
 			server: {
 				host: '0.0.0.0',
-				port: 443,
-				strictPort: true,
-				https: {
-					key: fs.readFileSync('./certs/srv.key'),
-					cert: fs.readFileSync('./certs/srv.crt'),
-				},
-				disableHostCheck: true,
 			}
 		};
 	} else {

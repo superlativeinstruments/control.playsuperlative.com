@@ -4,10 +4,9 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"dev": "sudo vite",
+		"dev": "vite",
 		"build": "vite build",
-		"preview": "vite preview",
-		"generate_certs": "step ca certificate control.playsuperlative.com certs/srv.crt certs/srv.key"
+		"preview": "vite preview"
 	},
 	"author": "Rune Warhuus <rune@dinkdonk.no>",
 	"license": "UNLICENSED",

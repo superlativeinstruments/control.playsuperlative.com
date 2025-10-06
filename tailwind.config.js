@@ -20,25 +20,27 @@ module.exports = {
 				cmyk: {
 					...require("daisyui/src/theming/themes")["cmyk"],
 					'accent': '#000',
+					'success': '#007f5f',
 				},
 				nord: {
 					...require("daisyui/src/theming/themes")["nord"],
 					'accent': '#000',
+					'success': '#007f5f',
 				},
 				retro: {
 					...require("daisyui/src/theming/themes")["retro"],
-					// 'accent': '#fff',
 					'accent': '#cd7925',
+					'success': '#007f5f',
 				},
 				light: {
 					...require("daisyui/src/theming/themes")["light"],
-					// 'accent': '#fff',
 					'accent': '#cd7925',
+					'success': '#007f5f',
 				},
 				dark: {
 					...require("daisyui/src/theming/themes")["dark"],
-					// 'accent': '#fff',
 					'accent': '#cd7925',
+					'success': '#007f5f',
 				},
 			},
 			'lofi',
