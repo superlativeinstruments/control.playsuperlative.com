@@ -1,7 +1,8 @@
 <script>
 import { ref, reactive, watch } from 'vue';
 import ControlPanelSb01 from './ControlPanelSb01.vue';
-import ControlPanelSb01Next from './ControlPanelSb01Next.vue';
+import ControlPanelSb01V3 from './ControlPanelSb01V3.vue';
+import ControlPanelSb01V4 from './ControlPanelSb01V4.vue';
 import ControlPanelCicada from './ControlPanelCicada.vue';
 
 const compatibleDevices = [
@@ -128,7 +129,8 @@ function onMatrixRadioClick(event, value) {
 
 		<div v-if="state == states.READY" class="hero bg-base-300 w-full max-w-xl rounded-xl">
 			<ControlPanelSb01 v-if="deviceName == 'SB01' && deviceVersion <= 2" :device="device" :device-name='deviceName' />
-			<ControlPanelSb01Next v-if="deviceName == 'SB01' && deviceVersion >= 3" :device="device" :device-name='deviceName' />
+			<ControlPanelSb01V3 v-if="deviceName == 'SB01' && deviceVersion == 3" :device="device" :device-name='deviceName' />
+			<ControlPanelSb01V4 v-if="deviceName == 'SB01' && deviceVersion >= 4" :device="device" :device-name='deviceName' />
 			<ControlPanelCicada v-if="deviceName == 'CICADA'" :device="device" :device-name='deviceName' />
 		</div>
 
