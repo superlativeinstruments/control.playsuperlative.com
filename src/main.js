@@ -11,6 +11,7 @@ import {
 	MdInfo,
 	MdNotifications,
 	MdNotificationimportant,
+	MdUploadfile,
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -21,6 +22,7 @@ addIcons(
 	MdInfo,
 	MdNotifications,
 	MdNotificationimportant,
+	MdUploadfile,
 )
 
 const appHeight = () => {

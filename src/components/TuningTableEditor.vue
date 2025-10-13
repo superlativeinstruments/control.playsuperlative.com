@@ -2,7 +2,42 @@
 </script>
 
 <script setup>
-import { ref, onMounted, watch, defineEmits } from 'vue';
+import { useFloating } from '@floating-ui/vue';
+import { ref, onMounted, watch, defineEmits, nextTick } from 'vue';
+import { computePosition, flip, shift, offset } from '@floating-ui/vue';
+import { getOffsetsFromTunFile } from '../services/AnaMarkTun.js';
+
+const tooltipTrigger = ref(null);
+const tooltipContent = ref(null);
+const showTooltip = ref(false);
+const tooltipStyle = ref({});
+
+const updatePosition = async () => {
+  if (tooltipTrigger.value && tooltipContent.value) {
+    const { x, y } = await computePosition(tooltipTrigger.value, tooltipContent.value, {
+      placement: 'top',
+      middleware: [
+        offset(0),
+        flip(),
+        shift({ padding: 5 })
+      ]
+    });
+    
+    tooltipStyle.value = {
+      position: 'fixed',
+      left: `${x}px`,
+      top: `${y}px`,
+      zIndex: 9999,
+    };
+  }
+};
+
+watch(showTooltip, async (show) => {
+  if (show) {
+    await nextTick();
+    updatePosition();
+  }
+});
 
 const props = defineProps({
 	tuningTable: {
@@ -61,18 +96,18 @@ watch(activeKey, (newVal, oldValue) => {
 function update() {
 	const isValid = offsets.value.every(value => {
 		const intValue = parseInt(value);
-		return !isNaN(intValue) && intValue >= -99 && intValue <= 99;
+		return !isNaN(intValue);
 	});
 
 	const tempOffsets = [...offsets.value];
 	// Update tuningTable by adding offsets to idealTuningTable, rounding and clamping to 0-4095
 	if (isValid && JSON.stringify(previousOffsets) !== JSON.stringify(tempOffsets)) {
-		console.log('Valid offsets, updating tuning table');
 		for (let i = 0; i < 61; i++) {
 			let newValue = idealTuningTableUint16[i] + Math.round(offsets.value[i] * valuePerCent);
 			newValue = Math.min(Math.max(newValue, 0), 4095); // Clamp to 0-4095
 			props.tuningTable[i] = newValue;
 		}
+
 		emit('dataUpdated', props.tuningTable);
 	}
 
@@ -222,19 +257,77 @@ function handleInputBlur(event, index) {
 		update();
 	}
 }
+
+function importTuningFile(event) {
+	const file = event.target.files[0];
+
+	if (file) {
+		const reader = new FileReader();
+
+		reader.onload = (e) => {
+			const content = e.target.result;
+			const importedOffsets = getOffsetsFromTunFile(content);
+			console.log('Imported offsets:', importedOffsets);
+			if (importedOffsets && importedOffsets.length === 61) {
+				for (let i = 0; i < 61; i++) {
+					offsets.value[i] = importedOffsets[i];
+				}
+
+				update();
+			} else {
+				alert('Invalid .tun file. It must contain exactly 61 offsets.');
+			}
+		};
+
+		reader.readAsText(file);
+	}
+}
 </script>
 
 <template>
 	<div v-if="tuningTable"
 		 :class="{'collapse-open': tuningCollapseOpen}"
-		 class="tuning-collapse collapse collapse-arrow bg-base-300 rounded-none border-t border-b border-neutral/25">
+		 class="tuning-collapse collapse collapse-arrow bg-base-300 rounded-none border-t border-b border-neutral/25 overflow-clip">
 		<!-- <input type="checkbox" tabindex="-1" /> -->
-		<div class="collapse-title uppercase"
+		<div class="collapse-title label-text text-xl"
 			 @click="tuningCollapseOpen = !tuningCollapseOpen">
-			 Tuning
+			<span class="mr-2">Tuning</span>
+			<button 
+				  ref="tooltipTrigger"
+				  class="text-neutral"
+				  @mouseenter="showTooltip = true"
+				  @mouseleave="showTooltip = false">
+				<v-icon name="md-help" scale="1.25" />
+			</button>
+
+			<Teleport to="body">
+				<div v-if="showTooltip"
+					 ref="tooltipContent"
+					 class="floating-tooltip grid gap-2"
+					 :style="tooltipStyle">
+					<p>Adjust the tuning offsets for each key in cents (-99 to +99).</p>
+					<p>You can click and drag on a key to adjust its offset, or enter a value directly in the input box.</p>
+					<p>Import a .tun file to load a tuning table directly. A .tun file will let you go beyond +-90 cents.</p>
+				</div>
+			</Teleport>
 		</div>
 		<div class="collapse-content visible">
-			<div class="keyboard">
+			<header class="flex justify-between w-full py-4">
+				<div>
+					<label for="tun-upload" class="btn btn-sm btn-outline">
+						<v-icon name="md-uploadfile" scale="1" />
+							Import .tun
+					</label>
+					<input id="tun-upload" type="file" accept=".tun" @change="importTuningFile" />
+				</div>
+
+				<button class="btn btn-sm btn-outline btn-neutral"
+						@click="offsets = new Array(61).fill(0); update();">
+					Reset
+				</button>
+			</header>
+
+			<div class="keyboard block">
 				<div class="offsets-wrapper">
 					<div class="input-wrapper"
 						 v-for="(key, index) in keyPositions"
@@ -337,7 +430,7 @@ function handleInputBlur(event, index) {
 	<div class="key-edit-overlay"></div>
 </template>
 
-<style  scoped lang="postcss">
+<style scoped lang="postcss">
 .collapse-title {
 	cursor: pointer;
 }
@@ -443,5 +536,36 @@ function handleInputBlur(event, index) {
 	text-align: center;
 	pointer-events: none;
 	@apply text-base-300;
+}
+
+input[type="file"] {
+	display: none;
+}
+
+.floating-tooltip {
+	position: fixed;
+	width: max-content;
+	max-width: 20rem;
+	padding: 0.25rem 0.5rem;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	text-align: center;
+	white-space: normal;
+	@apply bg-neutral text-neutral-content rounded shadow-lg z-50;
+}
+
+/* Optional: Add arrow pointing down (when tooltip is on top) */
+.floating-tooltip::after {
+	content: '';
+	position: absolute;
+	bottom: -3px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 0;
+	height: 0;
+	border-left: 3px solid transparent;
+	border-right: 3px solid transparent;
+	border-top: 3px solid;
+	@apply border-t-neutral;
 }
 </style>
