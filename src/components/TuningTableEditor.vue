@@ -226,11 +226,13 @@ function handleInputBlur(event, index) {
 
 <template>
 	<div v-if="tuningTable"
-		 @click="tuningCollapseOpen = !tuningCollapseOpen"
 		 :class="{'collapse-open': tuningCollapseOpen}"
 		 class="tuning-collapse collapse collapse-arrow bg-base-300 rounded-none border-t border-b border-neutral/25">
 		<!-- <input type="checkbox" tabindex="-1" /> -->
-		<div class="collapse-title uppercase">Tuning</div>
+		<div class="collapse-title uppercase"
+			 @click="tuningCollapseOpen = !tuningCollapseOpen">
+			 Tuning
+		</div>
 		<div class="collapse-content visible">
 			<div class="keyboard">
 				<div class="offsets-wrapper">
