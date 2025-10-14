@@ -282,6 +282,14 @@ function importTuningFile(event) {
 		reader.readAsText(file);
 	}
 }
+
+function reset() {
+	offsets.value = new Array(61).fill(0);
+	update();
+
+	// Reset file input
+	document.getElementById('tun-upload').value = '';
+}
 </script>
 
 <template>
@@ -323,7 +331,7 @@ function importTuningFile(event) {
 				</div>
 
 				<button class="btn btn-sm btn-outline btn-neutral"
-						@click="offsets = new Array(61).fill(0); update();">
+						@click="reset">
 					Reset
 				</button>
 			</header>
