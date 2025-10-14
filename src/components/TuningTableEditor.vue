@@ -308,7 +308,7 @@ function importTuningFile(event) {
 					<p>Adjust the tuning offsets for each key in cents (-99 to +99).</p>
 					<p>You can click and drag on a key to adjust its offset, or enter a value directly in the input box.</p>
 					<p>Import a .tun file to load a tuning table directly. A .tun file will let you go beyond +-90 cents.</p>
-					<p>Upon saving, the tuning table will be stored in the user tuning table slot on the device. This slot can be loaded by holding the first key on the keyboard when powering on the device.</p>
+					<p>Upon saving, the tuning table will be stored in the user tuning table slot. This slot can be loaded by holding the first key on the keyboard when powering on the SB01</p>
 				</div>
 			</Teleport>
 		</div>
