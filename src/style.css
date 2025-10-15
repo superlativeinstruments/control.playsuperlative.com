@@ -59,6 +59,11 @@ h4 {
 	@apply uppercase;
 }
 
+.label {
+	padding-left: 0;
+	padding-right: 0;
+}
+
 .label-text {
 	@apply uppercase;
 

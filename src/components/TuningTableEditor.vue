@@ -499,7 +499,7 @@ function reset() {
 	transition: padding 0.3s ease;
 
 	&:after {
-		@apply right-12;
+		@apply right-12 -translate-y-1/2 -translate-x-1/2;
 		transition: right 0.3s ease;
 	}
 }
