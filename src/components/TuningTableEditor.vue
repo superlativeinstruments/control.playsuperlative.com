@@ -499,8 +499,8 @@ function reset() {
 	input {
 		position: relative;
 		@apply input input-xs;
-		width: 4ch;
-		padding: 0.25rem;
+		width: 5ch;
+		padding: 0.2rem;
 		text-align: center;
 		z-index: 1;
 
