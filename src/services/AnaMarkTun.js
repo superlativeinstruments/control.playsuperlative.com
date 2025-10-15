@@ -16,6 +16,7 @@ function parseTuningLine(line) {
 }
 
 export function getOffsetsFromTunFile(tunFileContent, startNote = 36, endNote = 96) {
+	tunFileContent = tunFileContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n'); // Normalize line endings
 	const lines = tunFileContent.split('\n');
 	const offsets = new Array(61).fill(0);
 	let inTuningSection = false;
