@@ -7,6 +7,22 @@ import { ref, onMounted, watch, defineEmits, nextTick } from 'vue';
 import { computePosition, flip, shift, offset } from '@floating-ui/vue';
 import { getOffsetsFromTunFile } from '../services/AnaMarkTun.js';
 
+const tuningPresets = ref([
+	{file: 'tunings/just-intonation/c.tun', name: 'Just Intonation - C'},
+	{file: 'tunings/just-intonation/csharp.tun', name: 'Just Intonation - C#'},
+	{file: 'tunings/just-intonation/d.tun', name: 'Just Intonation - D'},
+	{file: 'tunings/just-intonation/dsharp.tun', name: 'Just Intonation - D#'},
+	{file: 'tunings/just-intonation/e.tun', name: 'Just Intonation - E'},
+	{file: 'tunings/just-intonation/f.tun', name: 'Just Intonation - F'},
+	{file: 'tunings/just-intonation/fsharp.tun', name: 'Just Intonation - F#'},
+	{file: 'tunings/just-intonation/g.tun', name: 'Just Intonation - G'},
+	{file: 'tunings/just-intonation/gsharp.tun', name: 'Just Intonation - G#'},
+	{file: 'tunings/just-intonation/a.tun', name: 'Just Intonation - A'},
+	{file: 'tunings/just-intonation/asharp.tun', name: 'Just Intonation - A#'},
+	{file: 'tunings/just-intonation/b.tun', name: 'Just Intonation - B'},
+]);
+const selectedPreset = ref('');
+
 const tooltipTrigger = ref(null);
 const tooltipContent = ref(null);
 const showTooltip = ref(false);
@@ -273,6 +289,8 @@ function importTuningFile(event) {
 					offsets.value[i] = importedOffsets[i];
 				}
 
+				selectedPreset.value = '';
+
 				update();
 			} else {
 				alert('Invalid .tun file. It must contain exactly 61 offsets.');
@@ -283,12 +301,36 @@ function importTuningFile(event) {
 	}
 }
 
+function loadPreset() {
+	if (selectedPreset.value) {
+		fetch(selectedPreset.value)
+			.then(response => response.text())
+			.then(data => {
+				const importedOffsets = getOffsetsFromTunFile(data);
+				if (importedOffsets && importedOffsets.length === 61) {
+					for (let i = 0; i < 61; i++) {
+						offsets.value[i] = importedOffsets[i];
+					}
+
+					update();
+				} else {
+					alert('Invalid preset file. It must contain exactly 61 offsets.');
+				}
+			})
+			.catch(error => {
+				console.error('Error loading preset:', error);
+				alert('Failed to load preset file.');
+			});
+	}
+}
+
 function reset() {
 	offsets.value = new Array(61).fill(0);
 	update();
 
 	// Reset file input
 	document.getElementById('tun-upload').value = '';
+	selectedPreset.value = '';
 }
 </script>
 
@@ -322,15 +364,27 @@ function reset() {
 		</div>
 		<div class="collapse-content visible">
 			<header class="flex justify-between w-full py-4">
-				<div>
-					<label for="tun-upload" class="btn btn-sm btn-outline">
-						<v-icon name="md-uploadfile" scale="1" />
-							Import .tun
-					</label>
-					<input id="tun-upload" type="file" accept=".tun" @change="importTuningFile" />
+				<div class="grid grid-cols-2 gap-2">
+					<select class="select select-sm w-full max-w-xs mr-4"
+						 v-model="selectedPreset"
+						 @change="loadPreset">
+						<option disabled value="" selected>LOAD PRESET</option>
+						<option v-for="preset in tuningPresets"
+								:key="preset"
+								:value="preset.file">
+						{{ preset.name.toUpperCase() }}
+						</option>
+					</select>
+					<div>
+						<label for="tun-upload" class="btn btn-sm btn-neutral">
+							<v-icon name="md-uploadfile" scale="1" />
+								Import .tun
+						</label>
+						<input id="tun-upload" type="file" accept=".tun" @change="importTuningFile" />
+					</div>
 				</div>
 
-				<button class="btn btn-sm btn-outline btn-neutral"
+				<button class="btn btn-sm btn-neutral"
 						@click="reset">
 					Reset
 				</button>
