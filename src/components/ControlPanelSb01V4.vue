@@ -415,7 +415,13 @@ await configPortConnect();
 			</div>
 
 			<div class="grid gap-6 w-screen max-w-xl">
+				<div class="px-12">
+					<hr class="border-neutral/15">
+				</div>
 				<TuningTableEditor @data-updated="handleTuningTableUpdate" :tuning-table="settings.tuningTable" v-if="settings.tuningTable" />
+				<div class="px-12">
+					<hr class="border-neutral/15">
+				</div>
 			</div>
 
 			<div class="grid gap-6 w-screen max-w-xl bg-base-300 rounded-b-xl">

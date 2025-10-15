@@ -337,9 +337,9 @@ function reset() {
 <template>
 	<div v-if="tuningTable"
 		 :class="{'collapse-open': tuningCollapseOpen}"
-		 class="tuning-collapse collapse collapse-arrow bg-base-300 rounded-none border-t border-b border-neutral/25 overflow-clip">
+		 class="tuning-collapse collapse collapse-arrow bg-base-300 rounded-none">
 		<!-- <input type="checkbox" tabindex="-1" /> -->
-		<div class="collapse-title label-text text-xl"
+		<div class="collapse-title label-text text-xl px-12"
 			 @click="tuningCollapseOpen = !tuningCollapseOpen">
 			<span class="mr-2">Tuning</span>
 			<button 
@@ -496,6 +496,24 @@ function reset() {
 <style scoped lang="postcss">
 .collapse-title {
 	cursor: pointer;
+	transition: padding 0.3s ease;
+
+	&:after {
+		@apply right-12;
+		transition: right 0.3s ease;
+	}
+}
+
+.collapse-open {
+	@apply bg-black/10;
+
+	.collapse-title {
+		@apply px-4;
+
+		&:after {
+			@apply right-4;
+		}
+	}
 }
 
 .keyboard {
