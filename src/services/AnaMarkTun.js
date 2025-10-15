@@ -4,11 +4,11 @@ const idealCents = new Array(128).fill(0).map((_, i) => (i) * 100);
 // Tuning line format:
 // note [number]=[cents]
 function parseTuningLine(line) {
-	const match = line.match(/^note\s+(\d+)=(-?\d+(?:\.\d+)?)$/);
+	const match = line.match(/^note\s+(\d+)=\s*(-?\d+(?:\.\d+)?)$/);
 
 	if (match) {
 		const note = parseInt(match[1], 10);
-		const cents = parseFloat(match[2]);
+		const cents = Math.round(parseFloat(match[2]));
 		return { note, cents };
 	}
 
@@ -22,7 +22,7 @@ export function getOffsetsFromTunFile(tunFileContent, startNote = 36, endNote = 
 	let inTuningSection = false;
 
 	lines.forEach(line => {
-		if (line.startsWith('[Tuning]')) {
+		if (line.startsWith('[Exact Tuning]')) {
 			inTuningSection = true;
 		}
 
