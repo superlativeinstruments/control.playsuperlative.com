@@ -31,9 +31,9 @@ const tooltipStyle = ref({});
 const updatePosition = async () => {
   if (tooltipTrigger.value && tooltipContent.value) {
     const { x, y } = await computePosition(tooltipTrigger.value, tooltipContent.value, {
-      placement: 'top',
+      placement: 'bottom',
       middleware: [
-        offset(0),
+        offset(3),
         flip(),
         shift({ padding: 5 })
       ]
@@ -351,15 +351,17 @@ function reset() {
 			</button>
 
 			<Teleport to="body">
-				<div v-if="showTooltip"
-					 ref="tooltipContent"
-					 class="floating-tooltip grid gap-2"
-					 :style="tooltipStyle">
-					<p>Adjust the tuning offsets for each key in cents (-99 to +99).</p>
-					<p>You can click and drag on a key to adjust its offset, or enter a value directly in the input box.</p>
-					<p>Import a .tun file to load a tuning table directly. A .tun file will let you go beyond +-90 cents.</p>
-					<p>Upon saving, the tuning table will be stored in the user tuning table slot. This slot can be loaded by holding the first key on the keyboard when powering on the SB01</p>
-				</div>
+				<Transition name="fade">
+					<div v-if="showTooltip"
+						 ref="tooltipContent"
+						 class="floating-tooltip grid gap-2"
+						 :style="tooltipStyle">
+						<p>Adjust the tuning offsets for each key in cents (-99 to +99).</p>
+						<p>You can click and drag on a key to adjust its offset, or enter a value directly in the input box.</p>
+						<p>Import a .tun file to load a tuning table directly. A .tun file will let you go beyond +-90 cents.</p>
+						<p>Upon saving, the tuning table will be stored in the user tuning table slot. This slot can be loaded by holding the first key on the keyboard when powering on the SB01</p>
+					</div>
+				</Transition>
 			</Teleport>
 		</div>
 		<div class="collapse-content visible">
@@ -639,14 +641,26 @@ input[type="file"] {
 .floating-tooltip::after {
 	content: '';
 	position: absolute;
-	bottom: -3px;
+	top: -3px;
 	left: 50%;
 	transform: translateX(-50%);
 	width: 0;
 	height: 0;
 	border-left: 3px solid transparent;
 	border-right: 3px solid transparent;
-	border-top: 3px solid;
-	@apply border-t-neutral;
+	border-bottom: 3px solid;
+	@apply border-b-neutral;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+	transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
+	transition-duration: 0.2s;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+	opacity: 0;
 }
 </style>

@@ -259,7 +259,7 @@ await configPortConnect();
 			<div class="dropdown dropdown-hover dropdown-left justify-self-end self-center">
 				<v-icon role="button" name="md-info" scale="1" class="text-neutral" :class="{blink: newReleaseAvailable || newBetaAvailable}" />
 				<div tabindex="0" class="dropdown-content card">
-					<div class="card bg-base-100 w-96 shadow-sm p-2 px-4">
+					<div class="card bg-base-100 w-96 shadow-sm p-2 px-4 rounded-md">
 							<p class="text-sm">FIRMWARE BUILD DATE</p>
 							<p class="text-sm">{{ buildTime ? buildTime.toUTCString() : 'n/a' }}</p>
 
