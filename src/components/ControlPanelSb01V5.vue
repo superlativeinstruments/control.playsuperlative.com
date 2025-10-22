@@ -431,8 +431,7 @@ await configPortConnect();
 					<div class="form-control w-full">
 						<label class="cursor-pointer label">
 							<span>
-								<span class="label-text text-xl"
-									  :disabled="!settings.midiSyncTrsIn && !settings.midiSyncUsbIn">Dubwoofer Mode</span>
+								<span class="label-text text-xl">32' Range</span>
 								<div class="tooltip ml-2" data-tip="When enabled it sets the RANGE knob to span 32' - 4' instead of the normal 16' - 2', letting you go way deep">
 									<button class="text-neutral"><v-icon name="md-help" scale="1.25" /></button>
 								</div>
