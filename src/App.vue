@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useStorage } from '@vueuse/core'
 import ControlPanel from './components/ControlPanel.vue'
+import SequenceEditor from './components/SequenceEditor.vue'
 
 const theme = useStorage('theme', 'dark')
 document.documentElement.setAttribute('data-theme', theme.value);
@@ -23,6 +24,7 @@ function toggleThemes() {
 			</button>
 
 			<ControlPanel />
+			<!-- <SequenceEditor /> -->
 		</main>
 	</template>
 	<template #fallback>

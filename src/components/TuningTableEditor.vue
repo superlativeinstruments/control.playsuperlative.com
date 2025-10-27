@@ -29,30 +29,30 @@ const showTooltip = ref(false);
 const tooltipStyle = ref({});
 
 const updatePosition = async () => {
-  if (tooltipTrigger.value && tooltipContent.value) {
-    const { x, y } = await computePosition(tooltipTrigger.value, tooltipContent.value, {
-      placement: 'bottom',
-      middleware: [
-        offset(3),
-        flip(),
-        shift({ padding: 5 })
-      ]
-    });
-    
-    tooltipStyle.value = {
-      position: 'fixed',
-      left: `${x}px`,
-      top: `${y}px`,
-      zIndex: 9999,
-    };
-  }
+	if (tooltipTrigger.value && tooltipContent.value) {
+		const { x, y } = await computePosition(tooltipTrigger.value, tooltipContent.value, {
+			placement: 'bottom',
+			middleware: [
+				offset(3),
+				shift({ padding: 5 })
+			],
+			strategy: 'fixed'
+		});
+
+		tooltipStyle.value = {
+			position: 'fixed',
+			left: `${x}px`,
+			top: `${y}px`,
+			zIndex: 9999,
+		};
+	}
 };
 
 watch(showTooltip, async (show) => {
-  if (show) {
-    await nextTick();
-    updatePosition();
-  }
+	if (show) {
+		await nextTick();
+		updatePosition();
+	}
 });
 
 const props = defineProps({
