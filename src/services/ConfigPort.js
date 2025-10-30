@@ -53,14 +53,6 @@ class ConfigPort {
 			throw new Error('Address out of range');
 		}
 
-        await this.device.controlTransferOut({
-            requestType: 'vendor',
-            recipient: 'interface',
-            request: address,
-            value: 0x00, // No meaning for read operations
-            index: this.interfaceNumber
-        });
-
         let result = await this.device.controlTransferIn({
             requestType: 'vendor',
             recipient: 'interface',

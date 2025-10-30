@@ -233,7 +233,7 @@ document.addEventListener('mousemove', onMouseMove);
 <template class="root">
 	<div class="editor">
 	<menu>
-		<label for="keys-count">Steps:</label>
+		<label for="keys-count" class="label uppercase">Sequence length</label>
 		<input name="keys-count" type="number" v-model="stepsCount" min="1" max="128" />
 	</menu>
 	<div class="piano-roll">
@@ -277,6 +277,22 @@ document.addEventListener('mousemove', onMouseMove);
 	gap: 1rem;
 }
 
+menu {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+
+	input {
+		position: relative;
+		@apply input input-sm;
+		text-align: right;
+
+		&.invalid {
+			@apply input-error;
+		}
+	}
+}
+
 .piano-roll {
 	--border-color: rgba(100, 100, 100, 0.2);
 
@@ -285,10 +301,7 @@ document.addEventListener('mousemove', onMouseMove);
 	width: 100%;
 	height: 400px;
 	overflow: scroll;
-}
-
-menu {
-
+	scrollbar-color: var(--border-color) transparent;
 }
 
 .piano-keys {
