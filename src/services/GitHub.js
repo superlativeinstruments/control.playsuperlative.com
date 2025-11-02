@@ -21,7 +21,7 @@ export async function getLatestRelease(device) {
 
 	if (release) {
 		releaseChangelog = release.assets.find(a => a.name.endsWith('.md')).browser_download_url;
-		releaseDateTimeRaw = release.body.match(/Build Time: (.*)/)[1] + 'Z';
+		const releaseDateTimeRaw = release.body.match(/Build Time: (.*)/)[1] + 'Z';
 		releaseDateTime = new Date(releaseDateTimeRaw);
 	}
 
