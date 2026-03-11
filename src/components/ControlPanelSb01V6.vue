@@ -168,12 +168,21 @@ async function playSequencerEvent(event) {
 async function onConfigConnect() {
 	console.log('Config port connected');
 
-	const {
-		prereleaseChangelog,
-		prereleaseDateTime,
-		releaseChangelog,
-		releaseDateTime
-	} = await getLatestRelease();
+    let prereleaseChangelog;
+    let prereleaseDateTime;
+    let releaseChangelog;
+    let releaseDateTime;
+
+    try {
+        ({
+            prereleaseChangelog,
+            prereleaseDateTime,
+            releaseChangelog,
+            releaseDateTime
+        } = await getLatestRelease());
+    } catch (error) {
+        console.error("GitHub cache error", error);
+    }
 
 	let result;
 
@@ -228,11 +237,11 @@ async function onConfigConnect() {
 	result = await configPort.read(configAddresses.VERSION_SECOND);
 	buildTime.value.setUTCSeconds(result);
 
-	if (buildTime.value < prereleaseDateTime) {
+	if (prereleaseDateTime && buildTime.value < prereleaseDateTime) {
 		newBetaAvailable.value = prereleaseDateTime;
 	}
 
-	if (buildTime.value < releaseDateTime) {
+	if (releaseDateTime && buildTime.value < releaseDateTime) {
 		newReleaseAvailable.value = releaseDateTime;
 	}
 
