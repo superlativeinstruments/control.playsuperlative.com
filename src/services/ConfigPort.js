@@ -72,7 +72,7 @@ class ConfigPort {
 		}
 
 		if (!Number.isInteger(data) || data < 0 || data > 65535) {
-			throw new Error('Data must be an integer between 0 and 65535');
+            throw new Error(`Data must be an integer between 0 and 65535. Was ${typeof data}:${data}`);
 		}
 
 		data = new Uint16Array([data]);

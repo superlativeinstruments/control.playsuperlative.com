@@ -5,6 +5,7 @@ import ControlPanelSb01V3 from './ControlPanelSb01V3.vue';
 import ControlPanelSb01V4 from './ControlPanelSb01V4.vue';
 import ControlPanelSb01V5 from './ControlPanelSb01V5.vue';
 import ControlPanelSb01V6 from './ControlPanelSb01V6.vue';
+import ControlPanelSb01V7 from './ControlPanelSb01V7.vue';
 import ControlPanelCicada from './ControlPanelCicada.vue';
 
 const compatibleDevices = [
@@ -134,7 +135,8 @@ function onMatrixRadioClick(event, value) {
 			<ControlPanelSb01V3 v-if="deviceName == 'SB01' && deviceVersion == 3" :device="device" :device-name='deviceName' />
 			<ControlPanelSb01V4 v-if="deviceName == 'SB01' && deviceVersion == 4" :device="device" :device-name='deviceName' />
 			<ControlPanelSb01V5 v-if="deviceName == 'SB01' && deviceVersion == 5" :device="device" :device-name='deviceName' />
-			<ControlPanelSb01V6 v-if="deviceName == 'SB01' && deviceVersion >= 6" :device="device" :device-name='deviceName' />
+			<ControlPanelSb01V6 v-if="deviceName == 'SB01' && deviceVersion == 6" :device="device" :device-name='deviceName' />
+			<ControlPanelSb01V7 v-if="deviceName == 'SB01' && deviceVersion >= 7" :device="device" :device-name='deviceName' />
 			<ControlPanelCicada v-if="deviceName == 'CICADA'" :device="device" :device-name='deviceName' />
 		</div>
 
