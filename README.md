@@ -19,4 +19,4 @@ Every push to the `main` branch gets deployed to [control.playsuperlative.com](h
 
 ### Control panel versioning
 
-If a firmware version needs a specific version of the control panel because of compatibility issues, the routing should be done based on USB device version. This version number is the only developer controlled versioning indicator that is read when enumerating.
+If a firmware version needs a specific version of the control panel because of compatibility issues, the routing should be done based on USB device version (bcdDevice). This version number is the only developer controlled versioning indicator that is read when enumerating.

@@ -6,6 +6,7 @@ import ControlPanelSb01V4 from './ControlPanelSb01V4.vue';
 import ControlPanelSb01V5 from './ControlPanelSb01V5.vue';
 import ControlPanelSb01V6 from './ControlPanelSb01V6.vue';
 import ControlPanelSb01V7 from './ControlPanelSb01V7.vue';
+import ControlPanelSb01V8 from './ControlPanelSb01V8.vue';
 import ControlPanelCicada from './ControlPanelCicada.vue';
 
 const compatibleDevices = [
@@ -54,6 +55,8 @@ async function onConnect() {
 		deviceName.value = device.value.productName;
 		deviceVersion.value = device.value.deviceVersionMajor;
 
+        console.log(`Loading control panel for ${deviceName.value} version ${deviceVersion.value}`);
+
 		state.value = states.READY;
 	}
 }
@@ -93,6 +96,8 @@ async function requestDevice() {
 		deviceName.value = device.value.productName;
 		deviceVersion.value = device.value.deviceVersionMajor;
 
+        console.log(`Loading control panel for ${deviceName.value} version ${deviceVersion.value}`);
+
 		state.value = states.READY;
 	} catch (error) {
 		console.error('No device selected');
@@ -107,6 +112,8 @@ if (devices.length > 0) {
 	device.value = devices[0];
 	deviceName.value = device.value.productName;
 	deviceVersion.value = device.value.deviceVersionMajor;
+
+    console.log(`Loading control panel for ${deviceName.value} version ${deviceVersion.value}`);
 
 	state.value = states.READY;
 } else {
@@ -136,7 +143,8 @@ function onMatrixRadioClick(event, value) {
 			<ControlPanelSb01V4 v-if="deviceName == 'SB01' && deviceVersion == 4" :device="device" :device-name='deviceName' />
 			<ControlPanelSb01V5 v-if="deviceName == 'SB01' && deviceVersion == 5" :device="device" :device-name='deviceName' />
 			<ControlPanelSb01V6 v-if="deviceName == 'SB01' && deviceVersion == 6" :device="device" :device-name='deviceName' />
-			<ControlPanelSb01V7 v-if="deviceName == 'SB01' && deviceVersion >= 7" :device="device" :device-name='deviceName' />
+			<ControlPanelSb01V7 v-if="deviceName == 'SB01' && deviceVersion == 7" :device="device" :device-name='deviceName' />
+			<ControlPanelSb01V8 v-if="deviceName == 'SB01' && deviceVersion >= 8" :device="device" :device-name='deviceName' />
 			<ControlPanelCicada v-if="deviceName == 'CICADA'" :device="device" :device-name='deviceName' />
 		</div>
 
